@@ -235,9 +235,16 @@
         const morningWorkers = [];
         const eveningWorkers = [];
         Object.keys(dailyShifts).forEach(workerKey => {
-          const workerStatus = dailyShifts[workerKey];
-          if (workerStatus === 'morning' || workerStatus === 'double') morningWorkers.push(workerKey);
-          if (workerStatus === 'evening' || workerStatus === 'double') eveningWorkers.push(workerKey);
+          const workerStatusKey = dailyShifts[workerKey];
+          const statusInfo = statusTypes[workerStatusKey];
+          if (!statusInfo) return;
+
+          const label = statusInfo.label || '';
+          const isMorning = label.includes('早班') || label.includes('連班') || workerStatusKey === 'morning' || workerStatusKey === 'double';
+          const isEvening = label.includes('晚班') || label.includes('連班') || workerStatusKey === 'evening' || workerStatusKey === 'double';
+
+          if (isMorning) morningWorkers.push(workerKey);
+          if (isEvening) eveningWorkers.push(workerKey);
         });
 
         const getShortName = (fullName) => {
