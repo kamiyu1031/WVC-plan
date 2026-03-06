@@ -95,6 +95,9 @@
       '2026-10-10': '國慶日',
     };
 
+    // === 預設台灣區域資料 ===
+    const TW_AREAS = { "台北市": ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區", "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"], "新北市": ["萬里區", "金山區", "板橋區", "汐止區", "深坑區", "石碇區", "瑞芳區", "平溪區", "雙溪區", "貢寮區", "新店區", "坪林區", "烏來區", "永和區", "中和區", "土城區", "三峽區", "樹林區", "鶯歌區", "三重區", "新莊區", "泰山區", "林口區", "蘆洲區", "五股區", "八里區", "淡水區", "三芝區", "石門區"], "基隆市": ["仁愛區", "信義區", "中正區", "中山區", "安樂區", "暖暖區", "七堵區"], "桃園市": ["中壢區", "平鎮區", "龍潭區", "楊梅區", "新屋區", "觀音區", "桃園區", "龜山區", "八德區", "大溪區", "復興區", "大園區", "蘆竹區"], "新竹縣": ["竹北市", "湖口鄉", "新豐鄉", "新埔鎮", "關西鎮", "芎林鄉", "寶山鄉", "竹東鎮", "五峰鄉", "橫山鄉", "尖石鄉", "北埔鄉", "峨眉鄉"], "新竹市": ["東區", "北區", "香山區"], "苗栗縣": ["竹南鎮", "頭份市", "三灣鄉", "南庄鄉", "獅潭鄉", "後龍鎮", "通霄鎮", "苑裡鎮", "苗栗市", "造橋鄉", "頭屋鄉", "公館鄉", "大湖鄉", "泰安鄉", "銅鑼鄉", "三義鄉", "西湖鄉", "卓蘭鎮"], "台中市": ["中區", "東區", "南區", "西區", "北區", "北屯區", "西屯區", "南屯區", "太平區", "大里區", "霧峰區", "烏日區", "豐原區", "后里區", "石岡區", "東勢區", "和平區", "新社區", "潭子區", "大雅區", "神岡區", "大肚區", "沙鹿區", "龍井區", "梧棲區", "清水區", "大甲區", "外埔區", "大安區"], "彰化縣": ["彰化市", "芬園鄉", "花壇鄉", "秀水鄉", "鹿港鎮", "福興鄉", "線西鄉", "和美鎮", "伸港鄉", "員林市", "社頭鄉", "永靖鄉", "埔心鄉", "溪湖鎮", "大村鄉", "埔鹽鄉", "田中鎮", "北斗鎮", "田尾鄉", "埤頭鄉", "溪洲鄉", "竹塘鄉", "二林鎮", "大城鄉", "芳苑鄉", "二水鄉"], "南投縣": ["南投市", "中寮鄉", "草屯鎮", "國姓鄉", "埔里鎮", "仁愛鄉", "名間鄉", "集集鎮", "水里鄉", "魚池鄉", "信義鄉", "竹山鎮", "鹿谷鄉"], "雲林縣": ["斗南鎮", "大埤鄉", "虎尾鎮", "土庫鎮", "褒忠鄉", "東勢鄉", "台西鄉", "崙背鄉", "麥寮鄉", "斗六市", "林內鄉", "古坑鄉", "莿桐鄉", "西螺鎮", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["番路鄉", "梅山鄉", "竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉", "水上鄉", "鹿草鄉", "太保市", "朴子市", "東石鄉", "六腳鄉", "新港鄉", "民雄鄉", "大林鎮", "溪口鄉", "義竹鄉", "布袋鎮"], "嘉義市": ["東區", "西區"], "台南市": ["中西區", "東區", "南區", "北區", "安平區", "安南區", "永康區", "歸仁區", "新化區", "左鎮區", "玉井區", "楠西區", "南化區", "仁德區", "關廟區", "龍崎區", "官田區", "麻豆區", "佳里區", "西港區", "七股區", "將軍區", "學甲區", "北門區", "新營區", "後壁區", "白河區", "東山區", "六甲區", "下營區", "柳營區", "鹽水區", "善化區", "大內區", "山上區", "新市區", "安定區"], "高雄市": ["新興區", "前金區", "苓雅區", "鹽埕區", "鼓山區", "旗津區", "前鎮區", "三民區", "楠梓區", "小港區", "左營區", "仁武區", "大社區", "岡山區", "路竹區", "阿蓮區", "田寮區", "燕巢區", "橋頭區", "梓官區", "彌陀區", "永安區", "湖內區", "鳳山區", "大寮區", "林園區", "鳥松區", "大樹區", "旗山區", "美濃區", "六龜區", "內門區", "杉林區", "甲仙區", "桃源區", "那瑪夏區", "茂林區", "茄萣區"], "屏東縣": ["屏東市", "三地門鄉", "霧台鄉", "瑪家鄉", "九如鄉", "里港鄉", "高樹鄉", "鹽埔鄉", "長治鄉", "麟洛鄉", "竹田鄉", "內埔鄉", "萬丹鄉", "潮州鎮", "泰武鄉", "來義鄉", "萬巒鄉", "崁頂鄉", "新埤鄉", "南州鄉", "林邊鄉", "東港鎮", "琉球鄉", "佳冬鄉", "新園鄉", "枋寮鄉", "枋山鄉", "春日鄉", "獅子鄉", "車城鄉", "牡丹鄉", "恆春鎮", "滿州鄉"], "台東縣": ["台東市", "綠島鄉", "蘭嶼鄉", "延平鄉", "卑南鄉", "鹿野鄉", "關山鎮", "海端鄉", "池上鄉", "東河鄉", "成功鎮", "長濱鄉", "太麻里鄉", "金峰鄉", "大武鄉", "達仁鄉"], "花蓮縣": ["花蓮市", "新城鄉", "秀林鄉", "吉安鄉", "壽豐鄉", "鳳林鎮", "光復鄉", "豐濱鄉", "瑞穗鄉", "萬榮鄉", "玉里鎮", "卓溪鄉", "富里鄉"], "宜蘭縣": ["宜蘭市", "頭城鎮", "礁溪鄉", "壯圍鄉", "員山鄉", "羅東鎮", "三星鄉", "大同鄉", "五結鄉", "冬山鄉", "蘇澳鎮", "南澳鄉"], "澎湖縣": ["馬公市", "西嶼鄉", "望安鄉", "七美鄉", "白沙鄉", "湖西鄉"], "金門縣": ["金沙鎮", "金湖鎮", "金寧鄉", "金城鎮", "烈嶼鄉", "烏坵鄉"], "連江縣": ["南竿鄉", "北竿鄉", "莒光鄉", "東引鄉"] };
+
     function App() {
       const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 1)); // 預設 2026 年 3 月
       const [selectedDateStr, setSelectedDateStr] = useState(null); // 目前選中開啟 Modal 的日期
@@ -112,6 +115,12 @@
       });
       const [tasks, setTasks] = useState({}); // 每日任務
       const [materials, setMaterials] = useState({}); // 料件
+
+      // === Wizard 狀態 ===
+      const [missionConfig, setMissionConfig] = useState([]); // 從 mission-list 匯入的列表
+      const [showTaskWizard, setShowTaskWizard] = useState(false);
+      const [wizardStep, setWizardStep] = useState(1);
+      const [wizardData, setWizardData] = useState({ owner: '', project: '', city: '', region: '', address: '', remarks: '', customOwner: false, customProject: false });
 
       const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
 
@@ -176,12 +185,27 @@
 
       // === 任務與料件管理 ===
       const handleAddTask = () => {
+        setWizardData({ owner: '', project: '', city: '', region: '', address: '', remarks: '', customOwner: false, customProject: false });
+        setWizardStep(1);
+        setShowTaskWizard(true);
+      };
+
+      const submitTaskWizard = () => {
         setTasks(prev => {
           const daily = prev[selectedDateStr] ? [...prev[selectedDateStr]] : [];
-          daily.push({ id: Date.now(), owner: '', region: '', address: '', remarks: '' });
+          daily.push({
+            id: Date.now(),
+            owner: wizardData.owner,
+            project: wizardData.project,
+            region: (wizardData.city + wizardData.region).trim(),
+            address: wizardData.address,
+            remarks: wizardData.remarks
+          });
           return { ...prev, [selectedDateStr]: daily };
         });
+        setShowTaskWizard(false);
       };
+
       const handleUpdateTask = (id, field, value) => {
         setTasks(prev => {
           const daily = (prev[selectedDateStr] || []).map(t => t.id === id ? { ...t, [field]: value } : t);
@@ -236,6 +260,7 @@
           shifts: shifts,
           tasks: tasks,
           materials: materials,
+          missionConfig: missionConfig,
         };
         const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -260,6 +285,7 @@
             if (data.shifts) setShifts(data.shifts);
             if (data.tasks) setTasks(data.tasks);
             if (data.materials) setMaterials(data.materials);
+            if (data.missionConfig) setMissionConfig(data.missionConfig);
             if (data.currentMonth) {
               const parts = data.currentMonth.split('-');
               setCurrentDate(new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1));
@@ -529,6 +555,34 @@
         reader.readAsBinaryString(file);
       };
 
+      // 處理任務清單 Excel 匯入
+      const handleMissionExcelUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const data = XLSX.utils.sheet_to_json(ws);
+
+            if (data.length > 0) {
+              setMissionConfig(data);
+              alert(`成功匯入 ${data.length} 筆任務清單！`);
+            } else {
+              alert('未能在該檔案中找到任何有效資料。');
+            }
+          } catch (error) {
+            console.error(error);
+            alert('解析任務清單發生錯誤。');
+          }
+        };
+        reader.readAsBinaryString(file);
+        e.target.value = '';
+      };
+
       // 產生空白格子
       const emptyCells = Array.from({ length: firstDayIndex }).map((_, i) => (
         <div key={`empty-${i}`} className="bg-gray-50/50 border border-gray-100 min-h-[120px] sm:min-h-[140px]"></div>
@@ -695,6 +749,12 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
                   匯入 Excel
                   <input type="file" accept=".xlsx, .xls" onChange={handleExcelUpload} className="hidden" />
+                </label>
+
+                <label className="cursor-pointer flex items-center gap-1 bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M8 13h2" /><path d="M8 17h2" /><path d="M14 13h2" /><path d="M14 17h2" /></svg>
+                  匯入任務清單
+                  <input type="file" accept=".xlsx, .xls" onChange={handleMissionExcelUpload} className="hidden" />
                 </label>
 
                 <button onClick={handleSave} className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
@@ -871,10 +931,11 @@
                       <div className="space-y-3">
                         {(tasks[selectedDateStr] || []).map((task) => (
                           <div key={task.id} className="bg-white p-3 rounded-lg border border-amber-200/60 flex flex-col sm:flex-row gap-2 items-start sm:items-center shadow-sm">
-                            <input type="text" placeholder="業主" className="w-full sm:w-1/4 text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value={task.owner} onChange={(e) => handleUpdateTask(task.id, 'owner', e.target.value)} />
-                            <input type="text" placeholder="區域" className="w-full sm:w-1/4 text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value={task.region} onChange={(e) => handleUpdateTask(task.id, 'region', e.target.value)} />
-                            <input type="text" placeholder="地址" className="w-full sm:w-[35%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value={task.address} onChange={(e) => handleUpdateTask(task.id, 'address', e.target.value)} />
-                            <input type="text" placeholder="備註" className="w-full sm:w-[25%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value={task.remarks} onChange={(e) => handleUpdateTask(task.id, 'remarks', e.target.value)} />
+                            <input type="text" placeholder="業主" className="w-[15%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.owner} onChange={(e) => handleUpdateTask(task.id, 'owner', e.target.value)} />
+                            <input type="text" placeholder="標案" className="w-[15%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.project} onChange={(e) => handleUpdateTask(task.id, 'project', e.target.value)} />
+                            <input type="text" placeholder="區域" className="w-[20%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.region} onChange={(e) => handleUpdateTask(task.id, 'region', e.target.value)} />
+                            <input type="text" placeholder="地址" className="w-[30%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.address} onChange={(e) => handleUpdateTask(task.id, 'address', e.target.value)} />
+                            <input type="text" placeholder="備註" className="w-[20%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.remarks} onChange={(e) => handleUpdateTask(task.id, 'remarks', e.target.value)} />
                             <button onClick={() => handleRemoveTask(task.id)} className="text-red-400 hover:text-red-600 p-1 flex-shrink-0">
                               <X className="w-5 h-5" />
                             </button>
@@ -1007,6 +1068,154 @@
               </div>
             </div>
           )}
+
+          {/* 新增任務的獨立 Wizard 頁面 */}
+          {showTaskWizard && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-amber-50">
+                  <h2 className="text-xl font-bold text-amber-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" /></svg>
+                    新增任務精靈 - {wizardStep === 1 ? '選擇業主' : wizardStep === 2 ? '選擇標案' : wizardStep === 3 ? '選擇區域' : '完成細節'}
+                  </h2>
+                  <button onClick={() => setShowTaskWizard(false)} className="text-gray-400 hover:text-gray-700">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="p-6 overflow-y-auto flex-1 bg-white">
+                  {wizardStep === 1 && (() => {
+                    const uniqueOwners = [...new Set(missionConfig.map(m => m['業主']).filter(Boolean))];
+                    return (
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-500 font-medium mb-3">請選擇或輸入業主：</p>
+                        {uniqueOwners.length > 0 ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {uniqueOwners.map(owner => (
+                              <button key={owner} onClick={() => { setWizardData({ ...wizardData, owner, customOwner: false }); setWizardStep(2); }} className="py-3 px-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl hover:bg-amber-100 hover:shadow-sm transition-all font-bold">
+                                {owner}
+                              </button>
+                            ))}
+                            <button onClick={() => setWizardData({ ...wizardData, owner: '', customOwner: true })} className="py-3 px-4 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all">手動輸入...</button>
+                          </div>
+                        ) : (
+                          <div className="bg-amber-100 p-4 rounded-xl text-amber-800 text-sm mb-4">
+                            尚未匯入任務清單 Excel。請使用手動輸入！
+                          </div>
+                        )}
+                        {(wizardData.customOwner || uniqueOwners.length === 0) && (
+                          <div className="mt-4 flex gap-2">
+                            <input type="text" className="flex-1 border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-amber-500" placeholder="請輸入業主名稱" value={wizardData.owner} onChange={e => setWizardData({ ...wizardData, owner: e.target.value })} autoFocus />
+                            <button onClick={() => { if (wizardData.owner) setWizardStep(2); }} className="px-6 bg-amber-600 text-white rounded-xl font-bold">下一步</button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {wizardStep === 2 && (() => {
+                    const projects = [...new Set(missionConfig.filter(m => m['業主'] === wizardData.owner).map(m => m['標案']).filter(Boolean))];
+                    return (
+                      <div className="space-y-4">
+                        <button onClick={() => setWizardStep(1)} className="text-sm text-amber-600 hover:text-amber-800 flex items-center mb-2">
+                          <ChevronLeft className="w-4 h-4 mr-1" /> 上一步
+                        </button>
+                        <p className="text-sm text-gray-500 font-medium mb-3">已知業主：「{wizardData.owner}」，請選擇標案：</p>
+                        {projects.length > 0 ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {projects.map(proj => (
+                              <button key={proj} onClick={() => { setWizardData({ ...wizardData, project: proj, customProject: false }); setWizardStep(3); }} className="py-3 px-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl hover:bg-amber-100 hover:shadow-sm transition-all font-bold">
+                                {proj}
+                              </button>
+                            ))}
+                            <button onClick={() => setWizardData({ ...wizardData, project: '', customProject: true })} className="py-3 px-4 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all">手動輸入...</button>
+                          </div>
+                        ) : null}
+                        {(wizardData.customProject || projects.length === 0) && (
+                          <div className="mt-4 flex gap-2">
+                            <input type="text" className="flex-1 border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-amber-500" placeholder="請輸入標案名稱" value={wizardData.project} onChange={e => setWizardData({ ...wizardData, project: e.target.value })} autoFocus />
+                            <button onClick={() => { setWizardStep(3); }} className="px-6 bg-amber-600 text-white rounded-xl font-bold">下一步</button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {wizardStep === 3 && (
+                    <div className="space-y-4">
+                      <button onClick={() => setWizardStep(2)} className="text-sm text-amber-600 hover:text-amber-800 flex items-center mb-2">
+                        <ChevronLeft className="w-4 h-4 mr-1" /> 上一步
+                      </button>
+                      <p className="text-sm text-gray-500 font-medium mb-3">請選擇區域或縣市：</p>
+
+                      {!wizardData.city ? (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+                          {Object.keys(TW_AREAS).map(city => (
+                            <button key={city} onClick={() => setWizardData({ ...wizardData, city })} className="py-2.5 px-2 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg hover:bg-blue-100 font-medium text-sm">
+                              {city}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-4 animate-in fade-in">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="font-bold text-lg text-blue-800">{wizardData.city}</span>
+                            <button onClick={() => setWizardData({ ...wizardData, city: '' })} className="text-xs bg-gray-200 px-2 py-1 rounded text-gray-600 hover:bg-gray-300">重選縣市</button>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                            {(TW_AREAS[wizardData.city] || []).map(dist => (
+                              <button key={dist} onClick={() => { setWizardData({ ...wizardData, region: dist }); setWizardStep(4); }} className="py-2.5 px-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg hover:bg-amber-100 font-medium text-sm">
+                                {dist}
+                              </button>
+                            ))}
+                            <button onClick={() => { setWizardData({ ...wizardData, region: '' }); setWizardStep(4); }} className="py-2.5 px-2 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100 font-medium text-sm">手動填寫/跳過</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {wizardStep === 4 && (
+                    <div className="space-y-4">
+                      <button onClick={() => setWizardStep(3)} className="text-sm text-amber-600 hover:text-amber-800 flex items-center mb-2">
+                        <ChevronLeft className="w-4 h-4 mr-1" /> 上一步
+                      </button>
+
+                      <div className="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-2 mb-4">
+                        <div className="flex"><span className="w-16 text-gray-500">業主：</span><span className="font-bold">{wizardData.owner}</span></div>
+                        <div className="flex"><span className="w-16 text-gray-500">標案：</span><span className="font-bold">{wizardData.project || '(未填)'}</span></div>
+                        <div className="flex"><span className="w-16 text-gray-500">區域：</span><span className="font-bold">{wizardData.city}{wizardData.region}</span></div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="block">
+                          <span className="text-sm font-bold text-gray-700 mb-1 block">確切地址 / 路段：</span>
+                          <input type="text" className="w-full border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-amber-500" placeholder="例如：中山路一段..." value={wizardData.address} onChange={e => setWizardData({ ...wizardData, address: e.target.value })} autoFocus />
+                        </label>
+                        <label className="block">
+                          <span className="text-sm font-bold text-gray-700 mb-1 block">備註事項：</span>
+                          <input type="text" className="w-full border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-amber-500" placeholder="選填" value={wizardData.remarks} onChange={e => setWizardData({ ...wizardData, remarks: e.target.value })} />
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                  <button onClick={() => setShowTaskWizard(false)} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">
+                    取消
+                  </button>
+                  {wizardStep === 4 && (
+                    <button onClick={submitTaskWizard} className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-sm transition-colors focus:ring-4 focus:ring-amber-500/20 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                      完成並加入
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       );
     }
