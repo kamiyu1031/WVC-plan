@@ -84,6 +84,7 @@
         '2026-03-06': { '吳文龍': 'dayoff', '陳禮宏': 'sick' },
         '2026-03-09': { '廖旻揆': 'awol' },
       });
+      const [shiftTimes, setShiftTimes] = useState({}); // { '2026-03-05': { morning: '08:00', evening: '18:00' } }
       const [tasks, setTasks] = useState({}); // 每日任務
       const [materials, setMaterials] = useState({}); // 料件
 
@@ -220,6 +221,55 @@
         });
       };
 
+      // === 複製該日排班文字格式 ===
+      const handleCopySchedule = () => {
+        if (!selectedDateStr) return;
+        const dateParts = selectedDateStr.split('-');
+        const m = parseInt(dateParts[1], 10);
+        const d = parseInt(dateParts[2], 10);
+        const dateLine = `${m}/${d}`;
+
+        const times = shiftTimes[selectedDateStr] || {};
+        const dailyShifts = shifts[selectedDateStr] || {};
+
+        const morningWorkers = [];
+        const eveningWorkers = [];
+        Object.keys(dailyShifts).forEach(workerKey => {
+          const workerStatus = dailyShifts[workerKey];
+          if (workerStatus === 'morning' || workerStatus === 'double') morningWorkers.push(workerKey);
+          if (workerStatus === 'evening' || workerStatus === 'double') eveningWorkers.push(workerKey);
+        });
+
+        const getShortName = (fullName) => {
+          const match = workersList.find(w => w.name === fullName || `工班員 ${w.id}` === fullName);
+          return match ? match.short : fullName;
+        };
+
+        let resultMsg = "";
+        if (morningWorkers.length > 0) {
+          const timeStr = times.morning || "08:00";
+          resultMsg += `${dateLine}\n早上${timeStr}\n${morningWorkers.map(getShortName).join('.')}\n`;
+        }
+
+        if (eveningWorkers.length > 0) {
+          if (resultMsg !== "") resultMsg += "\n";
+          const timeStr = times.evening || "20:00";
+          resultMsg += `${dateLine}\n晚上${timeStr}\n${eveningWorkers.map(getShortName).join('.')}\n`;
+        }
+
+        if (resultMsg === "") {
+          alert("今日無排班紀錄可複製");
+          return;
+        }
+
+        navigator.clipboard.writeText(resultMsg).then(() => {
+          alert("已成功複製班表！\n\n" + resultMsg);
+        }).catch(err => {
+          console.error('複製失敗', err);
+          alert("複製失敗，請檢查瀏覽器權限或手動反白複製");
+        });
+      };
+
       // === 儲存排班資料為 JSON 檔案 ===
       const handleSave = () => {
         const saveData = {
@@ -229,6 +279,7 @@
           workers: workersList,
           statuses: statusTypes,
           shifts: shifts,
+          shiftTimes: shiftTimes,
           tasks: tasks,
           materials: materials,
           missionConfig: missionConfig,
@@ -254,6 +305,7 @@
             if (data.workers) setWorkersList(data.workers);
             if (data.statuses) setStatusTypes(data.statuses);
             if (data.shifts) setShifts(data.shifts);
+            if (data.shiftTimes) setShiftTimes(data.shiftTimes);
             if (data.tasks) setTasks(data.tasks);
             if (data.materials) setMaterials(data.materials);
             if (data.missionConfig) setMissionConfig(data.missionConfig);
@@ -822,9 +874,29 @@
                       <CalendarIcon className="w-5 h-5 text-blue-600" />
                       {selectedDateStr} 排班設定
                     </h2>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 mt-1 mb-3">
                       {HOLIDAYS[selectedDateStr] ? `國定假日：${HOLIDAYS[selectedDateStr]}` : '一般工作日'}
                     </p>
+                    <div className="flex flex-wrap gap-4 items-center bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-100">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700">早班時間:</label>
+                        <input
+                          type="time"
+                          className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"
+                          value={(shiftTimes[selectedDateStr] || {}).morning || ''}
+                          onChange={(e) => setShiftTimes(prev => ({ ...prev, [selectedDateStr]: { ...(prev[selectedDateStr] || {}), morning: e.target.value } }))}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700">晚班時間:</label>
+                        <input
+                          type="time"
+                          className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"
+                          value={(shiftTimes[selectedDateStr] || {}).evening || ''}
+                          onChange={(e) => setShiftTimes(prev => ({ ...prev, [selectedDateStr]: { ...(prev[selectedDateStr] || {}), evening: e.target.value } }))}
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -950,7 +1022,14 @@
                 </div>
 
                 {/* Modal Footer */}
-                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                  <button
+                    onClick={handleCopySchedule}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 font-medium rounded-xl shadow-sm transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
+                    複製文字班表
+                  </button>
                   <button
                     onClick={() => setSelectedDateStr(null)}
                     className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20"
