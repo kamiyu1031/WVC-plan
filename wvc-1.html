@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工班出勤排班表</title>
+
+  <script src="lib/react.min.js"></script>
+  <script src="lib/react-dom.min.js"></script>
+  <script src="lib/babel.min.js"></script>
+  <script src="lib/tailwindcss.js"></script>
+  <script src="lib/xlsx.full.min.js"></script>
+  <script src="lib/html2canvas.min.js"></script>
+  <script src="lib/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module">
+    const { useState, useMemo } = React;
+
+    const ChevronLeft = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6" /></svg>);
+    const ChevronRight = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6" /></svg>);
+    const CalendarIcon = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>);
+    const X = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>);
+    const Users = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>);
+    const AlertCircle = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>);
+
+    // === 定義排班狀態與對應顏色 (以 Excel 「狀態」工作表為主) ===
+    const DEFAULT_STATUS_TYPES = {
+      unassign: { label: '未派', bg: '#BFBFBF', borderStyle: 'none', borderColor: 'transparent', textColor: '#333333' },
+      morning: { label: '早班', bg: '#A9D18E', borderStyle: 'solid', borderColor: '#A9D18E', textColor: '#1a4d1a' },
+      evening: { label: '晚班', bg: '#70AD47', borderStyle: 'solid', borderColor: '#333333', textColor: '#ffffff' },
+      double: { label: '連班', bg: '#4D7731', borderStyle: 'dashed', borderColor: '#4D7731', textColor: '#ffffff' },
+      dayoff: { label: '排休', bg: '#00B0F0', borderStyle: 'none', borderColor: 'transparent', textColor: '#ffffff' },
+      block: { label: '擋班', bg: '#FFFFFF', borderStyle: 'none', borderColor: 'transparent', textColor: '#333333' },
+      personal: { label: '事假', bg: '#F4B8C1', borderStyle: 'none', borderColor: 'transparent', textColor: '#6b1d2b' },
+      injury: { label: '工傷', bg: '#CC00FF', borderStyle: 'none', borderColor: 'transparent', textColor: '#ffffff' },
+      awol: { label: '曠職', bg: '#FF0000', borderStyle: 'dashed', borderColor: '#00B0F0', textColor: '#ffffff' },
+      funeral: { label: '喪假', bg: '#FF0000', borderStyle: 'none', borderColor: 'transparent', textColor: '#ffffff' },
+      paternity: { label: '陪產', bg: '#002060', borderStyle: 'none', borderColor: 'transparent', textColor: '#ffffff' },
+      sick: { label: '病假', bg: '#F4B8C1', borderStyle: 'dashed', borderColor: '#00B0F0', textColor: '#6b1d2b' },
+    };
+
+    // === 30 位預設工班人員名單 (將由 Excel 動態更新) ===
+    const DEFAULT_WORKERS = [
+      { id: 1, name: '陳易璘', short: '明' },
+      { id: 2, name: '吳文龍', short: '龍' },
+      { id: 3, name: '陳清建', short: '清' },
+      { id: 4, name: '呂世欽', short: '欽' },
+      { id: 5, name: '邱宗賢', short: '賢' },
+      { id: 6, name: '周啟智', short: '智' },
+      { id: 7, name: '許朝淵', short: '淵' },
+      { id: 8, name: '廖旻揆', short: '旻' },
+      { id: 9, name: '莊盛傑', short: '傑' },
+      { id: 10, name: '張成億', short: '億' },
+      { id: 11, name: '李祐緯', short: '緯' },
+      { id: 12, name: '劉文傑', short: '傑' },
+      { id: 13, name: '黃品融', short: '融' },
+      { id: 14, name: '蕭承晉', short: '晉' },
+      { id: 15, name: '陳禮宏', short: '禮' },
+      { id: 16, name: '亞納', short: '亞' },
+      { id: 17, name: '23-蘇南迪', short: '迪' },
+      { id: 18, name: '13-普萬托', short: '普' },
+      { id: 19, name: '點-胡哲維', short: 'D1' },
+      { id: 20, name: '點-謝侑軒', short: 'D2' },
+      { id: 21, name: '0', short: '21' },
+      { id: 22, name: '0', short: '22' },
+      { id: 23, name: '0', short: '23' },
+      { id: 24, name: '0', short: '24' },
+      { id: 25, name: '0', short: '25' },
+      { id: 26, name: '0', short: '26' },
+      { id: 27, name: '0', short: '27' },
+      { id: 28, name: '0', short: '28' },
+      { id: 29, name: '0', short: '29' },
+      { id: 30, name: '0', short: '30' }
+    ];
+
+    // === 國定假日對應表 (以 2026 年為例) ===
+    // 實務上可串接政府 open data API (https://data.gov.tw/dataset/14718)
+    const HOLIDAYS = {
+      '2026-01-01': '元旦',
+      '2026-02-16': '除夕',
+      '2026-02-17': '春節',
+      '2026-02-18': '春節',
+      '2026-02-19': '春節',
+      '2026-02-20': '春節',
+      '2026-02-28': '228和平紀念日',
+      '2026-04-03': '兒童節',
+      '2026-04-04': '清明節',
+      '2026-06-19': '端午節',
+      '2026-09-25': '中秋節',
+      '2026-10-10': '國慶日',
+    };
+
+    function App() {
+      const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 1)); // 預設 2026 年 3 月
+      const [selectedDateStr, setSelectedDateStr] = useState(null); // 目前選中開啟 Modal 的日期
+      const [showTextInput, setShowTextInput] = useState(false); // 文字輸入排班 Modal
+      const [textInputValue, setTextInputValue] = useState(''); // 文字輸入內容
+      const [textInputResult, setTextInputResult] = useState(null); // 文字輸入結果訊息
+      const [workersList, setWorkersList] = useState(DEFAULT_WORKERS); // 動態工班名單
+      const [statusTypes, setStatusTypes] = useState(DEFAULT_STATUS_TYPES); // 動態狀態圖例
+
+      // 儲存排班資料: Key 為 YYYY-MM-DD, Value 為 { '工人A': 'morning', '工人B': 'dayoff' }
+      // 預設為空，若某天某工人沒有紀錄，則視為 'unassign' (未派)
+      const [shifts, setShifts] = useState({
+        '2026-03-06': { '吳文龍': 'dayoff', '陳禮宏': 'sick' },
+        '2026-03-09': { '廖旻揆': 'awol' },
+      });
+
+      const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
+
+      // 取得當月的第一天與總天數
+      const { firstDayIndex, daysInMonth, currentYear, currentMonth } = useMemo(() => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        let firstDayIndex = firstDay.getDay() - 1;
+        if (firstDayIndex === -1) firstDayIndex = 6;
+
+        return {
+          firstDayIndex,
+          daysInMonth: lastDay.getDate(),
+          currentYear: year,
+          currentMonth: month,
+        };
+      }, [currentDate]);
+
+      // 格式化日期為 YYYY-MM-DD
+      const formatDateString = (year, month, day) => {
+        return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      };
+
+      // 取得農曆日期字串 (使用瀏覽器內建 Intl API)
+      const getLunarDateStr = (year, month, day) => {
+        try {
+          const date = new Date(year, month, day);
+          const formatter = new Intl.DateTimeFormat('zh-TW-u-ca-chinese', { month: 'short', day: 'numeric' });
+          let lunarStr = formatter.format(date);
+          // 移除多餘字眼，只保留如 "正月十五" 或 "二月初一"
+          return lunarStr.replace(/農曆|年/g, '').trim();
+        } catch (e) {
+          return ''; // 若瀏覽器不支援則回傳空
+        }
+      };
+
+      const handlePrevMonth = () => setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
+      const handleNextMonth = () => setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
+
+      // 處理點擊單一日期開啟排班面板
+      const handleDayClick = (day) => {
+        const dateStr = formatDateString(currentYear, currentMonth, day);
+        setSelectedDateStr(dateStr);
+      };
+
+      // 變更排班狀態
+      const handleStatusChange = (worker, newStatus) => {
+        setShifts(prev => {
+          const dailyData = { ...(prev[selectedDateStr] || {}) };
+          if (newStatus === 'normal') {
+            delete dailyData[worker];
+          } else {
+            dailyData[worker] = newStatus;
+          }
+          return { ...prev, [selectedDateStr]: dailyData };
+        });
+      };
+
+      // 全天重設為「未派」
+      const handleResetAllToUnassign = () => {
+        if (!selectedDateStr) return;
+        setShifts(prev => {
+          const copy = { ...prev };
+          delete copy[selectedDateStr];
+          return copy;
+        });
+      };
+
+      // === 儲存排班資料為 JSON 檔案 ===
+      const handleSave = () => {
+        const saveData = {
+          version: 1,
+          savedAt: new Date().toISOString(),
+          currentMonth: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`,
+          workers: workersList,
+          statuses: statusTypes,
+          shifts: shifts,
+        };
+        const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `排班表_${saveData.currentMonth}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('排班資料已儲存！');
+      };
+
+      // === 讀取排班資料 JSON 檔案 ===
+      const handleLoad = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const data = JSON.parse(evt.target.result);
+            if (data.workers) setWorkersList(data.workers);
+            if (data.statuses) setStatusTypes(data.statuses);
+            if (data.shifts) setShifts(data.shifts);
+            if (data.currentMonth) {
+              const parts = data.currentMonth.split('-');
+              setCurrentDate(new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1));
+            }
+            alert('排班資料已成功讀取！');
+          } catch (err) {
+            console.error(err);
+            alert('讀取失敗，請確認檔案格式正確。');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = ''; // 重設以便再次選取同一檔案
+      };
+
+      // === 文字輸入排班處理 ===
+      const handleTextInputSchedule = () => {
+        const text = textInputValue.trim();
+        if (!text) {
+          setTextInputResult({ type: 'error', message: '請輸入排班內容。' });
+          return;
+        }
+
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length < 3) {
+          setTextInputResult({ type: 'error', message: '格式不正確，至少需要三行：日期、時間、人員簡稱。' });
+          return;
+        }
+
+        // 第一行：解析日期 (支援 M/D 或 MM/DD 格式)
+        const dateLine = lines[0];
+        const dateMatch = dateLine.match(/(\d{1,2})\/(\d{1,2})/);
+        if (!dateMatch) {
+          setTextInputResult({ type: 'error', message: `無法解析日期："${dateLine}"，請用 M/D 格式 (如 3/4)。` });
+          return;
+        }
+        const inputMonth = parseInt(dateMatch[1]);
+        const inputDay = parseInt(dateMatch[2]);
+        const targetYear = currentYear;
+        // 驗證日期有效性
+        const testDate = new Date(targetYear, inputMonth - 1, inputDay);
+        if (testDate.getMonth() !== inputMonth - 1 || testDate.getDate() !== inputDay) {
+          setTextInputResult({ type: 'error', message: `日期無效：${inputMonth}/${inputDay}` });
+          return;
+        }
+        const targetDateStr = formatDateString(targetYear, inputMonth - 1, inputDay);
+
+        // 第二行：解析時間判斷早班/晚班
+        const timeLine = lines[1];
+        let shiftType = 'evening'; // 預設晚班
+        // 判斷早班條件：包含「上午」、「早上」、「早班」、「AM」，或時間小時 < 12
+        const morningKeywords = /上午|早上|早班|am/i;
+        if (morningKeywords.test(timeLine)) {
+          shiftType = 'morning';
+        } else {
+          // 嘗試解析時間中的小時數
+          const timeMatch = timeLine.match(/(\d{1,2})\s*[:：]\s*(\d{1,2})/);
+          if (timeMatch) {
+            const hour = parseInt(timeMatch[1]);
+            if (hour < 12) {
+              shiftType = 'morning';
+            }
+          }
+        }
+
+        // 找到對應的狀態 key (morning / evening)
+        let statusKey = shiftType;
+        // 如果 statusTypes 使用自訂 key (如 status_1)，需要用 label 查找
+        if (!statusTypes[statusKey]) {
+          const targetLabel = shiftType === 'morning' ? '早班' : '晚班';
+          const found = Object.entries(statusTypes).find(([k, v]) => v.label === targetLabel);
+          if (found) statusKey = found[0];
+        }
+
+        // 第三行：解析人員簡稱 (以 . 分隔)
+        const namesLine = lines[2];
+        const shortNames = namesLine.split('.').map(n => n.trim()).filter(n => n.length > 0);
+
+        if (shortNames.length === 0) {
+          setTextInputResult({ type: 'error', message: '未偵測到任何人員簡稱。' });
+          return;
+        }
+
+        // 匹配人員
+        const matched = [];
+        const unmatched = [];
+        const newDailyData = { ...(shifts[targetDateStr] || {}) };
+
+        // 找出名稱以「點-」開頭的工班人員
+        const dotWorkers = workersList.filter(w => w.name.startsWith('點-'));
+        let dotWorkerIndex = 0;
+
+        shortNames.forEach(shortName => {
+          // 在 workersList 中尋找匹配的 short
+          const worker = workersList.find(w => w.short === shortName && w.name !== '0');
+          if (worker) {
+            newDailyData[worker.name] = statusKey;
+            matched.push(`${worker.name}(${shortName})`);
+          } else {
+            // 查無對應簡稱，分配到「點-」人員
+            if (dotWorkerIndex < dotWorkers.length) {
+              const dotWorker = dotWorkers[dotWorkerIndex];
+              newDailyData[dotWorker.name] = statusKey;
+              matched.push(`${dotWorker.name} ← 代替 "${shortName}"`);
+              dotWorkerIndex++;
+            } else {
+              unmatched.push(shortName);
+            }
+          }
+        });
+
+        // 更新 shifts
+        setShifts(prev => ({
+          ...prev,
+          [targetDateStr]: newDailyData,
+        }));
+
+        // 產生結果訊息
+        const shiftLabel = shiftType === 'morning' ? '早班' : '晚班';
+        let resultMsg = `✅ 已將 ${targetDateStr} 設定 ${shiftLabel}：\n`;
+        resultMsg += `成功配對 ${matched.length} 人：\n${matched.join('、')}\n`;
+        if (unmatched.length > 0) {
+          resultMsg += `\n⚠️ 無法配對 ${unmatched.length} 人（無可用點工人員）：${unmatched.join('、')}`;
+        }
+        setTextInputResult({ type: 'success', message: resultMsg });
+      };
+
+      // === 匯出 PDF (A4 橫向排版) ===
+      const handleExportPDF = async () => {
+        const el = document.getElementById('calendar-area');
+        if (!el) { alert('找不到月曆區域'); return; }
+        try {
+          // 顯示處理中提示
+          const loadingDiv = document.createElement('div');
+          loadingDiv.id = 'pdf-loading';
+          loadingDiv.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999';
+          loadingDiv.innerHTML = '<div style="background:white;padding:24px 48px;border-radius:12px;font-size:18px;font-weight:bold;">PDF 產生中，請稍候...</div>';
+          document.body.appendChild(loadingDiv);
+
+          await new Promise(r => setTimeout(r, 100)); // 等待 UI 更新
+
+          const canvas = await html2canvas(el, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+          });
+
+          const { jsPDF } = window.jspdf;
+          // A4 橫向: 297mm x 210mm
+          const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+          const pageW = 287; // 內容寬度 (297-左右邊距)
+          const pageH = 200; // 內容高度 (210-上下邊距)
+
+          const imgW = canvas.width;
+          const imgH = canvas.height;
+          const ratio = Math.min(pageW / imgW, pageH / imgH);
+          const finalW = imgW * ratio;
+          const finalH = imgH * ratio;
+          const offsetX = (297 - finalW) / 2;
+          const offsetY = (210 - finalH) / 2;
+
+          const imgData = canvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', offsetX, offsetY, finalW, finalH);
+          pdf.save(`排班表_${currentYear}年${currentMonth + 1}月.pdf`);
+
+          document.getElementById('pdf-loading')?.remove();
+        } catch (err) {
+          console.error(err);
+          document.getElementById('pdf-loading')?.remove();
+          alert('PDF 匯出失敗，請確認網路連線以載入所需套件。');
+        }
+      };
+
+      // 處理 Excel 匯入 (同時讀取「工班清單」和「狀態」兩張工作表)
+      const handleExcelUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+
+            // === 解析「工班清單」工作表 ===
+            const workerSheetName = wb.SheetNames.find(n => n.includes('清單') || n.includes('工班')) || wb.SheetNames[0];
+            const ws = wb.Sheets[workerSheetName];
+            const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+            const newWorkers = [];
+            for (let i = 1; i < data.length; i++) {
+              const row = data[i];
+              if (!row || row.length === 0) continue;
+              const idVal = row[0];
+              const nameVal = row[1];
+              const shortVal = row[2];
+              let nameStr = (nameVal === undefined || nameVal === null || String(nameVal).trim() === '' || String(nameVal).trim() === '0') ? '0' : String(nameVal).trim();
+              let shortStr = (shortVal === undefined || shortVal === null) ? String(idVal || '') : String(shortVal).trim();
+              newWorkers.push({ id: idVal || i, name: nameStr, short: shortStr });
+            }
+            if (newWorkers.length > 0) {
+              setWorkersList(newWorkers);
+            }
+
+            // === 解析「狀態」工作表 ===
+            const statusSheetName = wb.SheetNames.find(n => n.includes('狀態'));
+            if (statusSheetName) {
+              const sws = wb.Sheets[statusSheetName];
+              const sData = XLSX.utils.sheet_to_json(sws, { header: 1 });
+
+              // 解析狀態，花形舊名對照表
+              const colorNameMap = {
+                '淺綠色': '#A9D18E', '深綠色': '#70AD47', '墨綠色': '#4D7731',
+                '藍色': '#00B0F0', '灰色': '#BFBFBF', '白色': '#FFFFFF',
+                '粉紅色': '#F4B8C1', '紫色': '#CC00FF', '紅色': '#FF0000',
+                '黑色': '#333333', '橙色': '#FF8C00', '黃色': '#FFD700',
+                '深藍色': '#002060',
+              };
+              // 過濾掉標題列
+              const newStatuses = {};
+              for (let i = 1; i < sData.length; i++) {
+                const row = sData[i];
+                if (!row || !row[0]) continue;
+                const label = String(row[0]).trim();
+                const colorLabel = row[1] ? String(row[1]).trim() : '綠色';
+                const borderLabel = row[2] ? String(row[2]).trim() : '無';
+                const borderColorLabel = row[3] ? String(row[3]).trim() : '無';
+
+                const bg = colorNameMap[colorLabel] || '#A9D18E';
+                let borderStyle = 'none';
+                if (borderLabel === '實線') borderStyle = 'solid';
+                else if (borderLabel === '虛線') borderStyle = 'dashed';
+                let borderColor = 'transparent';
+                if (borderColorLabel && borderColorLabel !== '無') {
+                  borderColor = colorNameMap[borderColorLabel] || borderColorLabel;
+                } else if (borderStyle === 'solid') {
+                  borderColor = bg; // 預設同底色
+                }
+
+                // 自動決定文字顏色
+                const darkBgs = ['#FFFFFF', '#BFBFBF', '#A9D18E', '#F4B8C1', '#FFD700'];
+                const textColor = darkBgs.includes(bg) ? '#333333' : '#ffffff';
+
+                const key = 'status_' + i;
+                newStatuses[key] = { label, bg, borderStyle, borderColor, textColor };
+              }
+              if (Object.keys(newStatuses).length > 0) {
+                // 將「未派」移到最前面作為預設狀態
+                const reordered = {};
+                const unassignKey = Object.keys(newStatuses).find(k => newStatuses[k].label === '未派');
+                if (unassignKey) {
+                  reordered[unassignKey] = newStatuses[unassignKey];
+                }
+                Object.keys(newStatuses).forEach(k => {
+                  if (k !== unassignKey) reordered[k] = newStatuses[k];
+                });
+                setStatusTypes(reordered);
+              }
+            }
+
+            alert('名單與狀態已成功從 Excel 匯入並更新！');
+          } catch (error) {
+            console.error(error);
+            alert('解析 Excel 時發生錯誤。請確認網路連線以載入解析套件，或檢查檔案格式。');
+          }
+        };
+        reader.readAsBinaryString(file);
+      };
+
+      // 產生空白格子
+      const emptyCells = Array.from({ length: firstDayIndex }).map((_, i) => (
+        <div key={`empty-${i}`} className="bg-gray-50/50 border border-gray-100 min-h-[120px] sm:min-h-[140px]"></div>
+      ));
+
+      // 產生日期格子
+      const dayCells = Array.from({ length: daysInMonth }).map((_, i) => {
+        const day = i + 1;
+        const dateStr = formatDateString(currentYear, currentMonth, day);
+        const dailyShifts = shifts[dateStr] || {};
+        const holidayName = HOLIDAYS[dateStr];
+        const lunarStr = getLunarDateStr(currentYear, currentMonth, day);
+
+        const dayOfWeekIndex = (firstDayIndex + i) % 7;
+        const isWeekend = dayOfWeekIndex === 5 || dayOfWeekIndex === 6;
+        const isToday = new Date().toDateString() === new Date(currentYear, currentMonth, day).toDateString();
+
+        // 計算出勤與未出勤統計
+        const presentKeys = ['morning', 'evening', 'double', 'block'];
+        const absentKeys = ['dayoff', 'unassign', 'personal', 'sick', 'awol', 'injury', 'funeral', 'paternity'];
+        const activeWorkers = workersList.filter(w => w.name !== '0');
+        const totalWorkers = activeWorkers.length;
+
+        // 統計每位工人的狀態
+        let presentCount = 0;
+        let absentCount = 0;
+        activeWorkers.forEach(w => {
+          const st = dailyShifts[w.name] || Object.keys(statusTypes)[0];
+          // 嘗試用 label 比對分類
+          const info = statusTypes[st];
+          const lbl = info ? info.label : '';
+          const presentLabels = ['早班', '晚班', '連班', '擋班'];
+          if (presentKeys.includes(st) || presentLabels.includes(lbl)) {
+            presentCount++;
+          } else {
+            absentCount++;
+          }
+        });
+
+        return (
+          <div
+            key={`day-${day}`}
+            onClick={() => handleDayClick(day)}
+            className={`relative p-1 border min-h-[100px] sm:min-h-[120px] flex flex-col cursor-pointer transition-all hover:border-blue-400 hover:shadow-md
+          ${isWeekend || holidayName ? 'bg-red-50/30' : 'bg-white'} 
+          ${isToday ? 'ring-2 ring-blue-500 ring-inset' : 'border-gray-200'}
+        `}
+          >
+            {/* 頂部：日期、農曆與假日資訊 */}
+            <div className="flex justify-between items-start mb-0.5">
+              <span className={`flex items-center justify-center w-7 h-7 rounded-full text-base font-bold
+            ${isToday ? 'bg-blue-600 text-white' : 'text-gray-800'}
+            ${(isWeekend || holidayName) && !isToday ? 'text-red-600' : ''}
+          `}>
+                {day}
+              </span>
+
+              <div className="flex flex-col items-end text-xs">
+                {holidayName ? (
+                  <span className="text-red-600 font-bold bg-red-100 px-1.5 py-0.5 rounded shadow-sm">{holidayName}</span>
+                ) : (
+                  <span className="text-gray-400">{lunarStr}</span>
+                )}
+              </div>
+            </div>
+
+            {/* 出勤/未出勤統計 */}
+            <div className="flex gap-1 mb-0.5 flex-wrap">
+              {presentCount > 0 && (
+                <span className="text-[9px] font-semibold text-green-800 bg-green-100 px-1 py-px rounded border border-green-300">
+                  出勤:{presentCount}
+                </span>
+              )}
+              {absentCount > 0 && (
+                <span className="text-[9px] font-semibold text-orange-800 bg-orange-100 px-1 py-px rounded border border-orange-300">
+                  未出勤:{absentCount}
+                </span>
+              )}
+            </div>
+
+            {/* 人員色彩矩陣 (Color Grid) - 隱藏空缺位 */}
+            <div className="mt-auto pt-1 grid grid-cols-5 gap-[1px]">
+              {workersList.filter(w => w.name !== '0').map((workerObj, idx) => {
+                const workerName = workerObj.name;
+                const statusKey = dailyShifts[workerName] || Object.keys(statusTypes)[0];
+                const statusInfo = statusTypes[statusKey] || Object.values(statusTypes)[0];
+
+                const cellStyle = {
+                  backgroundColor: statusInfo.bg,
+                  color: statusInfo.textColor,
+                  borderWidth: statusInfo.borderStyle !== 'none' ? '2px' : '1px',
+                  borderStyle: statusInfo.borderStyle !== 'none' ? statusInfo.borderStyle : 'solid',
+                  borderColor: statusInfo.borderStyle !== 'none' ? statusInfo.borderColor : (statusInfo.bg === '#FFFFFF' ? '#ccc' : statusInfo.bg),
+                };
+
+                return (
+                  <div
+                    key={idx}
+                    title={`${workerName}: ${statusInfo.label}`}
+                    style={cellStyle}
+                    className="w-full aspect-square rounded-sm flex items-center justify-center text-[10px] sm:text-[11px] cursor-help select-none font-medium opacity-90 hover:opacity-100 overflow-hidden leading-none tracking-tighter"
+                  >
+                    {workerObj.short}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      });
+
+      return (
+        <div className="min-h-screen bg-slate-100 py-6 px-2 sm:px-6 lg:px-8 font-sans">
+          <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+
+            {/* 頂部控制列 */}
+            <div className="bg-white border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                  <Users className="w-6 h-6" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-800">工班出勤排班表</h1>
+                  <p className="text-sm text-gray-500">總編制：{workersList.length} 人</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap bg-slate-50 p-1.5 rounded-xl border border-gray-200">
+                <label className="cursor-pointer flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+                  匯入 Excel
+                  <input type="file" accept=".xlsx, .xls" onChange={handleExcelUpload} className="hidden" />
+                </label>
+
+                <button onClick={handleSave} className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+                  儲存排班
+                </button>
+
+                <label className="cursor-pointer flex items-center gap-1 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+                  讀取排班
+                  <input type="file" accept=".json" onChange={handleLoad} className="hidden" />
+                </label>
+
+                <button onClick={handleExportPDF} className="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /></svg>
+                  匯出 PDF
+                </button>
+
+                <button onClick={() => { setShowTextInput(true); setTextInputResult(null); setTextInputValue(''); }} className="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
+                  文字輸入排班
+                </button>
+
+                <div className="flex items-center">
+                  <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-white hover:shadow-sm text-gray-600 transition-all">
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <h2 className="text-lg font-bold text-gray-800 w-32 text-center tracking-wide">
+                    {currentYear} 年 {currentMonth + 1} 月
+                  </h2>
+                  <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-white hover:shadow-sm text-gray-600 transition-all">
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 圖例區塊 - 帶有顏色外框效果 */}
+            <div className="bg-slate-50 px-6 py-3 border-b border-gray-200 flex flex-wrap gap-3 text-sm items-center">
+              <span className="font-semibold text-gray-700 mr-2 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4 text-gray-400" />
+                狀態圖例：
+              </span>
+              {Object.entries(statusTypes).map(([key, info]) => {
+                const swatchStyle = {
+                  width: '16px', height: '16px', borderRadius: '3px',
+                  backgroundColor: info.bg,
+                  borderWidth: info.borderStyle !== 'none' ? '2px' : '1px',
+                  borderStyle: info.borderStyle !== 'none' ? info.borderStyle : 'solid',
+                  borderColor: info.borderStyle !== 'none' ? info.borderColor : (info.bg === '#FFFFFF' ? '#ccc' : info.bg),
+                  boxShadow: info.borderStyle !== 'none' ? `0 0 0 1px ${info.borderColor}40` : 'none',
+                };
+                return (
+                  <div key={key} className="flex items-center gap-1.5">
+                    <div style={swatchStyle}></div>
+                    <span className="text-gray-600">{info.label}</span>
+                  </div>
+                );
+              })}
+              <span className="text-xs text-gray-400 ml-auto">※ 點擊月曆格子可編輯當日詳細班表</span>
+            </div>
+
+            {/* 月曆主體 */}
+            <div id="calendar-area" className="p-1 sm:p-2 bg-gray-50/50">
+              <div className="grid grid-cols-7 mb-1 gap-px sm:gap-[2px]">
+                {weekDays.map((day, index) => (
+                  <div
+                    key={day}
+                    className={`py-1.5 text-center text-sm font-bold rounded-lg
+                  ${(index === 5 || index === 6) ? 'text-red-500 bg-red-50' : 'text-gray-600 bg-gray-100'}
+                `}
+                  >
+                    星期{day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-px sm:gap-[2px]">
+                {emptyCells}
+                {dayCells}
+              </div>
+            </div>
+          </div>
+
+          {/* 排班編輯 Modal (當選取日期時彈出) */}
+          {selectedDateStr && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+                {/* Modal Header */}
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                      <CalendarIcon className="w-5 h-5 text-blue-600" />
+                      {selectedDateStr} 排班設定
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {HOLIDAYS[selectedDateStr] ? `國定假日：${HOLIDAYS[selectedDateStr]}` : '一般工作日'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => { if (window.confirm(`確定要將 ${selectedDateStr} 全部人員重設為「未派」嗎？`)) handleResetAllToUnassign(); }}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
+                      全部重設為未派
+                    </button>
+                    <button
+                      onClick={() => setSelectedDateStr(null)}
+                      className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal Body: 人員清單 */}
+                <div className="p-6 overflow-y-auto bg-white flex-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {workersList.map((workerObj) => {
+                      const workerName = workerObj.name !== '0' ? workerObj.name : `空缺位 ${workerObj.id}`;
+                      const dataKey = workerObj.name !== '0' ? workerObj.name : `工班員 ${workerObj.id}`;
+                      const firstKey = Object.keys(statusTypes)[0];
+                      const currentStatus = (shifts[selectedDateStr] && shifts[selectedDateStr][dataKey]) || firstKey;
+                      const statusInfo = statusTypes[currentStatus] || Object.values(statusTypes)[0];
+
+                      const dotStyle = {
+                        width: '12px', height: '12px', borderRadius: '3px',
+                        backgroundColor: statusInfo.bg,
+                        borderWidth: statusInfo.borderStyle !== 'none' ? '2px' : '1px',
+                        borderStyle: statusInfo.borderStyle !== 'none' ? statusInfo.borderStyle : 'solid',
+                        borderColor: statusInfo.borderStyle !== 'none' ? statusInfo.borderColor : (statusInfo.bg === '#FFFFFF' ? '#ccc' : statusInfo.bg),
+                      };
+
+                      return (
+                        <div key={workerObj.id} className={`flex items-center justify-between p-3 rounded-xl border transition-colors
+                      ${currentStatus === firstKey ? 'bg-gray-50 border-gray-200' : 'bg-blue-50/50 border-blue-200'}
+                    `}>
+                          <div className="flex items-center gap-2">
+                            <div style={dotStyle}></div>
+                            <span className="font-medium text-gray-700">{workerName} {workerObj.name !== '0' && <span className="text-xs text-gray-400">({workerObj.short})</span>}</span>
+                          </div>
+
+                          <select
+                            value={currentStatus}
+                            onChange={(e) => handleStatusChange(dataKey, e.target.value)}
+                            className={`text-sm border-0 rounded-lg py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-blue-500 cursor-pointer outline-none font-medium
+                          ${currentStatus === firstKey ? 'bg-white text-gray-700 border-gray-200 border' : 'bg-white text-blue-700 border-blue-200 border shadow-sm'}
+                        `}
+                          >
+                            {Object.entries(statusTypes).map(([key, info]) => (
+                              <option key={key} value={key}>{info.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+                  <button
+                    onClick={() => setSelectedDateStr(null)}
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20"
+                  >
+                    儲存並關閉
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 文字輸入排班 Modal */}
+          {showTextInput && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] overflow-hidden">
+
+                {/* Modal Header */}
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
+                      文字輸入排班
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">貼上排班文字，快速批次設定班表</p>
+                  </div>
+                  <button
+                    onClick={() => setShowTextInput(false)}
+                    className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-6 overflow-y-auto flex-1 space-y-4">
+                  {/* 格式說明 */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+                    <p className="font-semibold mb-2">📋 輸入格式說明：</p>
+                    <div className="space-y-1 text-blue-700">
+                      <p>• <strong>第一行</strong>：日期（如 <code className="bg-blue-100 px-1 rounded">3/4</code>）</p>
+                      <p>• <strong>第二行</strong>：時間（含「上午」「早上」或小時&lt;12 → 早班，其他 → 晚班）</p>
+                      <p>• <strong>第三行</strong>：人員簡稱，以 <code className="bg-blue-100 px-1 rounded">.</code> 分隔</p>
+                    </div>
+                    <div className="mt-3 bg-white/60 rounded-lg p-3 font-mono text-xs leading-relaxed">
+                      <span className="text-gray-500">範例：</span><br />
+                      3/4<br />
+                      早上10:00<br />
+                      欽.緯.智.賢.叡.旻.淵.傑.劉.億.融.禮.龍.蕭
+                    </div>
+                  </div>
+
+                  {/* 文字輸入區 */}
+                  <textarea
+                    value={textInputValue}
+                    onChange={(e) => { setTextInputValue(e.target.value); setTextInputResult(null); }}
+                    placeholder={'3/4\n早上10:00\n欽.緯.智.賢.叡.旻.淵.傑.劉.億.融.禮.龍.蕭'}
+                    className="w-full h-40 border border-gray-300 rounded-xl p-4 text-sm font-mono resize-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all placeholder:text-gray-300"
+                  />
+
+                  {/* 結果訊息 */}
+                  {textInputResult && (
+                    <div className={`rounded-xl p-4 text-sm whitespace-pre-wrap ${textInputResult.type === 'error'
+                        ? 'bg-red-50 border border-red-200 text-red-700'
+                        : 'bg-green-50 border border-green-200 text-green-700'
+                      }`}>
+                      {textInputResult.message}
+                    </div>
+                  )}
+                </div>
+
+                {/* Modal Footer */}
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowTextInput(false)}
+                    className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors"
+                  >
+                    關閉
+                  </button>
+                  <button
+                    onClick={handleTextInputSchedule}
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl shadow-sm transition-colors focus:ring-4 focus:ring-amber-500/20"
+                  >
+                    套用排班
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+
+</html>
