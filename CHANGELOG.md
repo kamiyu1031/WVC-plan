@@ -2,6 +2,11 @@
 
 所有關於 WVC-plan (工班出勤排班表) 的重要更新與版本紀錄將會在此檔案中維護。
 
+## [1.0.1] - 2026-03-06
+
+### 變更 (Changed)
+- 將主程式 `wvc-1.html` 更名為 `index.html`，以便未來部署至 GitHub Pages 時可以直接透過網址讀取。
+
 ## [Initial Version] - 2026-03-06
 
 ### 新增 (Added)
