@@ -88,32 +88,11 @@
       const [tasks, setTasks] = useState({}); // 每日任務
       const [materials, setMaterials] = useState({}); // 料件
 
-      // === 待辦任務 (由 Docx 分析而來) ===
-      const UNFINISHED_TASKS = [
-        "市道102線(15K+000~20K+900)",
-        "市道102甲線(0K+000~5K+000)",
-        "堤頂大道槽化(磨除另約時間,等會勘)",
-        "微風運河右岸標線斑駁(寵物公園至網球場)",
-        "新生南路三段2號填縫",
-        "安和路二段20號",
-        "樂利路47號(行穿採圖)",
-        "環河南路二段(雙園-西藏)",
-        "懷寧街(衡陽路-貴陽街一段)",
-        "華江橋(機車引道 白線防撞桿)",
-        "萬華區 環河南路二段(和平西路三段至西藏路)",
-        "中正區 青島東路(林森南路至杭州南路一段)",
-        "中正區 水源快速道路(師大路至基隆路四段)",
-        "康寧路一段(成功路三段與星雲街)",
-        "民權東路六段115巷-123巷",
-        "研究院路三段",
-        "台2線(4.5-8k)",
-        "中正路二段51巷與沙崙路",
-        "沙崙路(中正二路-中正路段22巷)",
-        "中正路二段51巷(觀海路-中正路二段)",
-        "中正路一段87巷8弄至中正二段51巷",
-        "中山北路一段(新市一路三段-大義街)",
-        "林口區 文化北路二段(福林路-中山路)"
-      ];
+      // === 待辦任務 (由 Excel 匯入分析而來) ===
+      const [unfinishedTasks, setUnfinishedTasks] = useState([
+        { loc: "新北市道102線(15K+000~20K+900)", remark: "" },
+        { loc: "公館圓環(紅白邊線刨除", remark: "刨除機+黑漆" }
+      ]);
 
       // === Wizard 狀態 ===
       const [missionConfig, setMissionConfig] = useState([{ "業主": "磐碩", "標案": "養工3區", "區域": "台灣郵政地址所有項目(新北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "養工7區", "區域": "台灣郵政地址所有項目(新北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "養工8區", "區域": "台灣郵政地址所有項目(新北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "8上", "區域": "台灣郵政地址所有項目(台北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "8下", "區域": "台灣郵政地址所有項目(台北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "公路局", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "農業局1區", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "大園", "區域": "台灣郵政地址所有項目(桃園市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "專案5標", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "桃園1區", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "巡查3標", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "巡查6標", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "上溢", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "逢國", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "冠筑", "標案": "冠筑", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "稻田", "標案": "稻田", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "福呈", "標案": "福呈", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "矽昌", "標案": "矽昌", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }]); // 從 mission-list 匯入的預設列表
@@ -187,6 +166,7 @@
       const handleAddTask = () => {
         setWizardData({ owner: '', project: '', city: '', region: '', address: '', remarks: '', customOwner: false, customProject: false });
         setWizardStep(1);
+        setShowUnfinishedTasks(false);
         setShowTaskWizard(true);
       };
 
@@ -263,6 +243,41 @@
           return copy;
         });
       };
+
+      // 全天重設為「擋班」
+      const handleResetAllToBlock = () => {
+        if (!selectedDateStr) return;
+        const blockKey = Object.keys(statusTypes).find(k => k === 'block' || statusTypes[k].label === '擋班') || 'block';
+        setShifts(prev => {
+          const dailyData = {};
+          workersList.forEach(w => {
+            if (w.name !== '0') {
+              dailyData[w.name] = blockKey;
+            }
+          });
+          return { ...prev, [selectedDateStr]: dailyData };
+        });
+      };
+
+      // 計算目前選取日期的出勤統計 (用於排班 Modal)
+      let modalPresentCount = 0;
+      let modalAbsentCount = 0;
+      if (selectedDateStr) {
+        const dailyShifts = shifts[selectedDateStr] || {};
+        const presentKeys = ['morning', 'evening', 'double', 'block'];
+        const activeWorkers = workersList.filter(w => w.name !== '0');
+        activeWorkers.forEach(w => {
+          const st = dailyShifts[w.name] || Object.keys(statusTypes)[0];
+          const info = statusTypes[st];
+          const lbl = info ? info.label : '';
+          const presentLabels = ['早班', '晚班', '連班', '擋班'];
+          if (presentKeys.includes(st) || presentLabels.includes(lbl)) {
+            modalPresentCount++;
+          } else {
+            modalAbsentCount++;
+          }
+        });
+      }
 
       // === 複製該日排班文字格式 ===
       const handleCopySchedule = () => {
@@ -656,6 +671,94 @@
         e.target.value = '';
       };
 
+      // 處理派工單匯入 (260309整理後派工單.xlsx 格式)
+      const handleWorkOrderUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const data = XLSX.utils.sheet_to_json(ws, { raw: false, defval: '' }); // raw:false 保證時間等為字串
+
+            if (data.length > 0) {
+              const newTasks = { ...tasks };
+              const newMaterials = { ...materials };
+              const newUnfinished = [];
+              const seenUnfinished = new Set();
+
+              data.forEach(row => {
+                const dateStrOriginal = String(row['日期'] || '').trim();
+                const match = dateStrOriginal.match(/(\d+)月(\d+)日/);
+                if (!match) return;
+
+                const m = parseInt(match[1], 10) - 1;
+                const d = parseInt(match[2], 10);
+                const targetDate = formatDateString(currentYear, m, d);
+
+                const shiftName = String(row['班別'] || '').trim();
+                const shiftType = (shiftName === '夜班' || shiftName === '晚班') ? '晚班' : '早班';
+
+                const time = String(row['上班時間'] || '').trim();
+                const owner = String(row['業主'] || '').trim();
+                const location = String(row['地點'] || '').trim();
+                const remarks = String(row['用料/備註'] || '').trim();
+
+                // 收集為待辦任務清單項目
+                if (location) {
+                  const uKey = location + "|||" + remarks;
+                  if (!seenUnfinished.has(uKey)) {
+                    seenUnfinished.add(uKey);
+                    newUnfinished.push({ loc: location, remark: remarks });
+                  }
+                }
+
+                // 新增任務 (地點對應確切地址/路段)
+                if (location || owner || time) {
+                  if (!newTasks[targetDate]) newTasks[targetDate] = [];
+                  newTasks[targetDate].push({
+                    owner: owner,
+                    project: '',
+                    city: '',
+                    region: shiftType,
+                    address: location,
+                    remarks: time, // 把上班時間先寫進remarks
+                    customOwner: true, customProject: true
+                  });
+                }
+
+                // 新增使用料件 (用料對應)
+                if (remarks) {
+                  if (!newMaterials[targetDate]) newMaterials[targetDate] = [];
+                  newMaterials[targetDate].push({
+                    tool: remarks,
+                    rawMaterial: '',
+                    quantity: ''
+                  });
+                }
+              });
+
+              setTasks(newTasks);
+              setMaterials(newMaterials);
+              if (newUnfinished.length > 0) {
+                setUnfinishedTasks(newUnfinished);
+              }
+              alert(`成功匯入派工單並轉換為排班項目！`);
+            } else {
+              alert('未能在該檔案中找到任何有效資料。');
+            }
+          } catch (error) {
+            console.error(error);
+            alert('解析派工單發生錯誤。請確認檔案格式是否為「整理後派工單」。');
+          }
+        };
+        reader.readAsBinaryString(file);
+        e.target.value = '';
+      };
+
       // 產生空白格子
       const emptyCells = Array.from({ length: firstDayIndex }).map((_, i) => (
         <div key={`empty-${i}`} className="bg-gray-50/50 border border-gray-100 min-h-[120px] sm:min-h-[140px]"></div>
@@ -671,7 +774,12 @@
 
         const dayOfWeekIndex = (firstDayIndex + i) % 7;
         const isWeekend = dayOfWeekIndex === 5 || dayOfWeekIndex === 6;
-        const isToday = new Date().toDateString() === new Date(currentYear, currentMonth, day).toDateString();
+
+        const cellDate = new Date(currentYear, currentMonth, day);
+        const isToday = new Date().toDateString() === cellDate.toDateString();
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const isPast = cellDate < todayStart;
 
         // 計算出勤與未出勤統計
         const presentKeys = ['morning', 'evening', 'double', 'block'];
@@ -722,19 +830,7 @@
               </div>
             </div>
 
-            {/* 出勤/未出勤統計 */}
-            <div className="flex gap-1 mb-0.5 flex-wrap">
-              {presentCount > 0 && (
-                <span className="text-[9px] font-semibold text-green-800 bg-green-100 px-1 py-px rounded border border-green-300">
-                  出勤:{presentCount}
-                </span>
-              )}
-              {absentCount > 0 && (
-                <span className="text-[9px] font-semibold text-orange-800 bg-orange-100 px-1 py-px rounded border border-orange-300">
-                  未出勤:{absentCount}
-                </span>
-              )}
-            </div>
+            {/* 出勤/未出勤統計已移至排班 Modal */}
 
             {/* 人員色彩矩陣 (Color Grid) - 隱藏空缺位 */}
             <div className="mt-auto pt-1 grid grid-cols-5 gap-[1px]">
@@ -770,12 +866,20 @@
                 {tasks[dateStr] && tasks[dateStr].length > 0 && (
                   <div className="bg-amber-50 rounded-sm px-1 py-0.5 text-[10px] sm:text-[11px] leading-tight text-amber-800 border border-amber-200/50">
                     <div className="font-bold border-b border-amber-200/50 mb-0.5 pb-px opacity-80 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>每日任務
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>任務
                     </div>
                     <div className="flex flex-col gap-px pl-1">
                       {tasks[dateStr].map((t, idx) => (
-                        <div key={idx} className="truncate" title={`${t.owner} / ${t.region} / ${t.address} ${t.remarks ? '(' + t.remarks + ')' : ''}`}>
-                          <span className="font-medium">{t.owner}</span> {t.region}
+                        <div key={idx} title={`${t.owner} / ${t.region} / ${t.address} ${t.remarks ? '(' + t.remarks + ')' : ''}`}>
+                          {isPast ? (
+                            <div className="truncate">
+                              {t.address || t.region || '無地址'}
+                            </div>
+                          ) : (
+                            <marquee scrollamount="2" className="flex items-center">
+                              <span className="font-medium">{t.owner}</span> {t.region} {t.address} {t.remarks ? `(${t.remarks})` : ''}
+                            </marquee>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -788,8 +892,16 @@
                     </div>
                     <div className="flex flex-col gap-px pl-1">
                       {materials[dateStr].map((m, idx) => (
-                        <div key={idx} className="truncate" title={`${m.tool} - ${m.rawMaterial} : ${m.quantity}`}>
-                          <span className="font-medium">{m.tool}</span> <span className="opacity-70">{m.rawMaterial}</span> <span className="text-teal-600 font-bold ml-0.5">{m.quantity}</span>
+                        <div key={idx} title={`${m.tool} - ${m.rawMaterial} : ${m.quantity}`}>
+                          {isPast ? (
+                            <div className="truncate">
+                              <span className="font-medium">{m.tool}</span> <span className="opacity-70 mx-1">{m.rawMaterial}</span> <span className="text-teal-600 font-bold ml-0.5">{m.quantity}</span>
+                            </div>
+                          ) : (
+                            <marquee scrollamount="2" className="flex items-center">
+                              <span className="font-medium">{m.tool}</span> <span className="opacity-70 mx-1">{m.rawMaterial}</span> <span className="text-teal-600 font-bold ml-0.5">{m.quantity}</span>
+                            </marquee>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -828,6 +940,12 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M8 13h2" /><path d="M8 17h2" /><path d="M14 13h2" /><path d="M14 17h2" /></svg>
                   匯入任務清單
                   <input type="file" accept=".xlsx, .xls" onChange={handleMissionExcelUpload} className="hidden" />
+                </label>
+
+                <label className="cursor-pointer flex items-center gap-1 bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2v6h6M4 22h14a2 2 0 0 0 2-2V8l-6-6H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2Z" /></svg>
+                  匯入派工單
+                  <input type="file" accept=".xlsx, .xls" onChange={handleWorkOrderUpload} className="hidden" />
                 </label>
 
                 <button onClick={handleSave} className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
@@ -918,50 +1036,107 @@
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
 
                 {/* Modal Header */}
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                      <CalendarIcon className="w-5 h-5 text-blue-600" />
-                      {selectedDateStr} 排班設定
-                    </h2>
-                    <p className="text-sm text-gray-500 mt-1 mb-3">
-                      {HOLIDAYS[selectedDateStr] ? `國定假日：${HOLIDAYS[selectedDateStr]}` : '一般工作日'}
-                    </p>
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-start bg-slate-50">
+                  {/* Left Column: Title and Time Inputs */}
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <CalendarIcon className="w-5 h-5 text-blue-600" />
+                        {selectedDateStr} 排班設定
+                      </h2>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {HOLIDAYS[selectedDateStr] ? `國定假日：${HOLIDAYS[selectedDateStr]}` : '一般工作日'}
+                      </p>
+                    </div>
                     <div className="flex flex-wrap gap-4 items-center bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-100">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-medium text-gray-700">早班時間:</label>
                         <input
                           type="time"
+                          step="900"
+                          title="分鐘只允許 00, 15, 30, 45"
                           className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"
                           value={(shiftTimes[selectedDateStr] || {}).morning || ''}
-                          onChange={(e) => setShiftTimes(prev => ({ ...prev, [selectedDateStr]: { ...(prev[selectedDateStr] || {}), morning: e.target.value } }))}
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (val) {
+                              const [h, m] = val.split(':');
+                              const min = parseInt(m, 10);
+                              const roundedMin = Math.round(min / 15) * 15;
+                              const finalMin = roundedMin === 60 ? '45' : String(roundedMin).padStart(2, '0');
+                              val = `${h}:${finalMin}`;
+                            }
+                            setShiftTimes(prev => ({ ...prev, [selectedDateStr]: { ...(prev[selectedDateStr] || {}), morning: val } }));
+                          }}
                         />
                       </div>
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-medium text-gray-700">晚班時間:</label>
                         <input
                           type="time"
+                          step="900"
+                          title="分鐘只允許 00, 15, 30, 45"
                           className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"
                           value={(shiftTimes[selectedDateStr] || {}).evening || ''}
-                          onChange={(e) => setShiftTimes(prev => ({ ...prev, [selectedDateStr]: { ...(prev[selectedDateStr] || {}), evening: e.target.value } }))}
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            if (val) {
+                              const [h, m] = val.split(':');
+                              const min = parseInt(m, 10);
+                              const roundedMin = Math.round(min / 15) * 15;
+                              const finalMin = roundedMin === 60 ? '45' : String(roundedMin).padStart(2, '0');
+                              val = `${h}:${finalMin}`;
+                            }
+                            setShiftTimes(prev => ({ ...prev, [selectedDateStr]: { ...(prev[selectedDateStr] || {}), evening: val } }));
+                          }}
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => { if (window.confirm(`確定要將 ${selectedDateStr} 全部人員重設為「未派」嗎？`)) handleResetAllToUnassign(); }}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 rounded-lg text-sm font-medium transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
-                      全部重設為未派
-                    </button>
-                    <button
-                      onClick={() => setSelectedDateStr(null)}
-                      className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
+
+                  {/* Right Column: Buttons and Stats */}
+                  <div className="flex flex-col items-end gap-3">
+                    {/* Top Right: Actions */}
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                      <button
+                        onClick={() => { if (window.confirm(`確定要將 ${selectedDateStr} 全部人員重設為「擋班」嗎？`)) handleResetAllToBlock(); }}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-700 border border-red-300 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></svg>
+                        全部重設為擋班
+                      </button>
+                      <button
+                        onClick={() => { if (window.confirm(`確定要將 ${selectedDateStr} 全部人員重設為「未派」嗎？`)) handleResetAllToUnassign(); }}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
+                        全部重設為未派
+                      </button>
+                      <button
+                        onClick={() => setSelectedDateStr(null)}
+                        className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors ml-2"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    {/* Bottom Right: Stats exactly where circled in the image */}
+                    {(modalPresentCount > 0 || modalAbsentCount > 0) && (
+                      <div className="flex gap-2">
+                        {modalPresentCount > 0 && (
+                          <div className="text-sm font-bold text-green-800 bg-green-100 px-3 py-1.5 rounded-lg border border-green-300 shadow-sm flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                            出勤：{modalPresentCount} 人
+                          </div>
+                        )}
+                        {modalAbsentCount > 0 && (
+                          <div className="text-sm font-bold text-orange-800 bg-orange-100 px-3 py-1.5 rounded-lg border border-orange-300 shadow-sm flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
+                            未出勤：{modalAbsentCount} 人
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1018,31 +1193,12 @@
                           每日任務
                         </h3>
                         <div className="flex gap-2">
-                          <button onClick={() => setShowUnfinishedTasks(!showUnfinishedTasks)} className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 px-3 py-1.5 rounded-lg shadow-sm font-medium transition-colors">
-                            📝 待辦工作列表
-                          </button>
                           <button onClick={handleAddTask} className="text-xs bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg shadow-sm font-medium transition-colors">
                             + 新增任務
                           </button>
                         </div>
                       </div>
 
-                      {showUnfinishedTasks && (
-                        <div className="mb-4 bg-white/60 p-3 rounded-lg border border-amber-200">
-                          <div className="text-sm text-gray-700 mb-2 font-medium">點擊按鈕直接加入排班：</div>
-                          <div className="flex flex-wrap gap-2">
-                            {UNFINISHED_TASKS.map((t, idx) => (
-                              <button
-                                key={idx}
-                                onClick={() => { handleAddUnfinishedTask(t); setShowUnfinishedTasks(false); }}
-                                className="text-xs text-left bg-white hover:bg-amber-50 border border-amber-300 px-2 py-1.5 rounded shadow-sm text-amber-900 transition-colors"
-                              >
-                                {t}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
 
                       <div className="space-y-3">
                         {(tasks[selectedDateStr] || []).map((task) => (
@@ -1308,6 +1464,30 @@
                         <div className="flex"><span className="w-16 text-gray-500">業主：</span><span className="font-bold">{wizardData.owner}</span></div>
                         <div className="flex"><span className="w-16 text-gray-500">標案：</span><span className="font-bold">{wizardData.project || '(未填)'}</span></div>
                         <div className="flex"><span className="w-16 text-gray-500">區域：</span><span className="font-bold">{wizardData.city}{wizardData.region}</span></div>
+                      </div>
+
+                      {/* 待辦工作列表按鈕 */}
+                      <div>
+                        <button onClick={() => setShowUnfinishedTasks(!showUnfinishedTasks)} className="text-sm bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 px-4 py-2 rounded-lg shadow-sm font-medium transition-colors flex items-center gap-1.5">
+                          📝 待辦工作列表
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${showUnfinishedTasks ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
+                        </button>
+                        {showUnfinishedTasks && (
+                          <div className="mt-2 bg-white/60 p-3 rounded-lg border border-amber-200">
+                            <div className="text-sm text-gray-700 mb-2 font-medium">點擊下方項目可自動帶入地址：</div>
+                            <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                              {unfinishedTasks.length > 0 ? unfinishedTasks.map((t, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => { setWizardData({ ...wizardData, address: t.loc, remarks: t.remark || '未完工作' }); setShowUnfinishedTasks(false); }}
+                                  className="text-xs text-left bg-white hover:bg-amber-50 border border-amber-300 px-2 py-1.5 rounded shadow-sm text-amber-900 transition-colors"
+                                >
+                                  {t.loc} {t.remark ? `(${t.remark})` : ''}
+                                </button>
+                              )) : <div className="text-xs text-gray-500">尚無待辦事項，請先匯入「派工單Excel」</div>}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-3">

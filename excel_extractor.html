@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>派工單 Excel 萃取精靈</title>
+    <!-- 引入 SheetJS(xlsx) 解析與生成 Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="file"] {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #f1f5f9;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .success-btn {
+            background-color: #10b981;
+        }
+
+        .success-btn:hover {
+            background-color: #059669;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            /* 初期隱藏，有資料再顯示 */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+            white-space: nowrap;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        tr:hover {
+            background-color: #f0fdf4;
+        }
+
+        .empty-text {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        #stats {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>📋 派工單 Excel 萃取精靈</h1>
+
+    <div class="controls">
+        <label for="excel-file" style="font-weight: 600;">上傳 Excel 派工單：</label>
+        <input type="file" id="excel-file" accept=".xlsx, .xls" />
+        <button id="export-btn" class="success-btn" style="display:none;">匯出為新的 Excel 表格</button>
+    </div>
+
+    <div id="stats"></div>
+
+    <div class="table-container" id="table-container">
+        <table id="result-table">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>班別</th>
+                    <th>上班時間</th>
+                    <th>業主</th>
+                    <th>地點</th>
+                    <th>用料/備註</th>
+                    <th>車號</th>
+                    <th>施作人員</th>
+                </tr>
+            </thead>
+            <tbody id="result-body">
+                <!-- 資料會注入於此 -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let flattenedData = []; // 用來存儲整理完的資料，以供匯出使用
+
+        document.getElementById('excel-file').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const allTableData = [];
+
+                // 遍歷所有工作表
+                workbook.SheetNames.forEach(function (sheetName) {
+                    const sheet = workbook.Sheets[sheetName];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+                    let currentBlock = null;
+                    let ownerCol = 0, locCol = 3, remarkCol = 13; // 預設常見的相對位置
+
+                    for (let i = 0; i < rows.length; i++) {
+                        // 清理每一個儲存格資料
+                        const row = rows[i].map(c => String(c || '').trim().replace(/\n/g, ' '));
+                        const rowStr = row.join('');
+                        if (!rowStr) continue; // 跳過完全空白的列
+
+                        // 判斷是否為新的「派工單」區塊 (通常會包含年、月、日、班別)
+                        if (rowStr.includes('派工單')) {
+                            let y = '', m = '', d = '', shift = '';
+                            for (let j = 0; j < row.length; j++) {
+                                if (row[j] === '年') y = row[j - 1] || row[j - 2] || '';
+                                if (row[j] === '月') m = String(row[j - 1] || row[j - 2] || '').padStart(2, '0');
+                                if (row[j] === '日') d = String(row[j - 1] || row[j - 2] || '').padStart(2, '0');
+                                if (row[j] === '日班' || row[j] === '夜班') shift = row[j];
+                            }
+                            currentBlock = {
+                                date: (m && d) ? `${parseInt(m)}月${parseInt(d)}日` : sheetName + '日',
+                                monthNum: parseInt(m) || 0,
+                                dayNum: parseInt(d) || 0,
+                                shift: shift,
+                                time: '', vehicle: '', workers: '',
+                                locations: []
+                            };
+                            allTableData.push(currentBlock);
+                            continue;
+                        }
+
+                        if (currentBlock) {
+                            // 動態捕捉表頭相對位置
+                            if (row.includes('業主') && row.includes('地點')) {
+                                ownerCol = row.indexOf('業主');
+                                locCol = Math.max(row.indexOf('地點'), row.findIndex((c, idx) => idx > ownerCol && c.includes('地點')));
+                                remarkCol = row.findIndex(c => c.includes('用料') || c.includes('備註'));
+                                if (ownerCol === -1) ownerCol = 0;
+                                if (locCol === -1) locCol = 3;
+                                if (remarkCol === -1) remarkCol = 13;
+                                continue;
+                            }
+
+                            const col0 = row[0] || '';
+                            const timeRegex = /^\d{1,2}:\d{2}$/;
+
+                            // 如果這列是車號
+                            if (col0.includes('車號:')) {
+                                currentBlock.vehicle = row.slice(1).find(c => c !== '') || '';
+                                // 時間有時候會寫在車號旁邊
+                                const possibleTime = row.find(c => timeRegex.test(c));
+                                if (possibleTime && !currentBlock.time) currentBlock.time = possibleTime;
+                                continue;
+                            }
+
+                            // 如果這列是施作人員
+                            if (col0.includes('施作人員:')) {
+                                currentBlock.workers = row.slice(1).find(c => c !== '' && c !== '(' && c !== ')') || '';
+                                continue;
+                            }
+
+                            // 檢查有沒有純時間被單獨塞在某個儲存格
+                            const possibleTimeRow = row.find(c => timeRegex.test(c));
+                            if (possibleTimeRow && row.filter(c => c).length === 1) {
+                                currentBlock.time = possibleTimeRow;
+                                continue;
+                            }
+                            if (possibleTimeRow && !currentBlock.time) {
+                                currentBlock.time = possibleTimeRow;
+                            }
+
+                            // 這列應該就是地點/任務列
+                            const owner = row[ownerCol] || row[0] || '';
+                            let loc = row[locCol !== -1 ? locCol : 3];
+                            // 若目標欄位沒東西，模糊尋找
+                            if (!loc) loc = row.find((c, idx) => idx >= 1 && idx <= Math.max(locCol, 5) && c) || '';
+
+                            let remark = row[remarkCol !== -1 ? remarkCol : 13] || row.slice(locCol !== -1 ? locCol + 1 : 4).find(c => c) || '';
+
+                            // 避免把找到的時間誤當作地點或備註
+                            if (remark === possibleTimeRow) remark = '';
+                            if (loc === possibleTimeRow) loc = '';
+
+                            // 確定這列不是奇怪的表頭
+                            if (owner === '車號:' || owner === '施作人員:') continue;
+
+                            // 只要有地點、備註或業主，就把他算作一項任務
+                            if (loc || owner) {
+                                currentBlock.locations.push({
+                                    owner: owner,
+                                    loc: loc,
+                                    remark: remark
+                                });
+                            }
+                        }
+                    }
+                });
+
+                // 攤平整理所有任務
+                flattenedData = [];
+                allTableData.forEach(function (b) {
+                    let time = b.time;
+                    const timeRegex = /^\d{1,2}:\d{2}$/;
+
+                    // 從內容裡找時間
+                    b.locations.forEach(function (l) {
+                        if (!time && timeRegex.test(l.loc)) time = l.loc;
+                        if (!time && timeRegex.test(l.remark)) time = l.remark;
+
+                        // 清除掉錯誤包含的時間
+                        if (timeRegex.test(l.loc)) l.loc = '';
+                        if (timeRegex.test(l.remark)) l.remark = '';
+                    });
+
+                    // 刪除空白任務 (空項目)
+                    b.locations = b.locations.filter(function (l) {
+                        return l.loc !== '' || l.remark !== '' || l.owner !== '';
+                    });
+
+                    // 每一項任務都複製同樣的 日期、班別、車號、人員 等屬性
+                    b.locations.forEach(function (l) {
+                        flattenedData.push({
+                            date: b.date,
+                            monthNum: b.monthNum,
+                            dayNum: b.dayNum,
+                            shift: b.shift,
+                            time: time,
+                            owner: l.owner,
+                            loc: l.loc,
+                            remark: l.remark,
+                            vehicle: b.vehicle,
+                            workers: b.workers
+                        });
+                    });
+                });
+
+                // 排序：依照日期新舊 (升冪，舊到新)
+                flattenedData.sort(function (a, b) {
+                    if (a.monthNum !== b.monthNum) return a.monthNum - b.monthNum;
+                    return a.dayNum - b.dayNum;
+                });
+
+                // 渲染到網頁畫面上
+                renderTable(flattenedData);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // 畫出表格
+        function renderTable(data) {
+            const tbody = document.getElementById('result-body');
+            tbody.innerHTML = ''; // 清空舊資料
+
+            data.forEach(function (d) {
+                const tr = document.createElement('tr');
+                const fields = ['date', 'shift', 'time', 'owner', 'loc', 'remark', 'vehicle', 'workers'];
+
+                fields.forEach(function (f) {
+                    const td = document.createElement('td');
+                    td.textContent = d[f] || '';
+                    if (!d[f]) td.className = 'empty-text';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+            // 顯示介面
+            document.getElementById('table-container').style.display = 'block';
+            document.getElementById('export-btn').style.display = 'inline-block';
+
+            const stats = document.getElementById('stats');
+            stats.textContent = `✅ 成功解析，共過濾並整理出 ${data.length} 筆任務項目！`;
+            stats.style.display = 'block';
+        }
+
+        // 匯出為新 Excel 表格
+        document.getElementById('export-btn').addEventListener('click', function () {
+            if (flattenedData.length === 0) return alert('目前沒有資料可匯出！');
+
+            // 建立 2D 陣列資料，包含表頭
+            const ws_data = [["日期", "班別", "上班時間", "業主", "地點", "用料/備註", "車號", "施作人員"]];
+
+            flattenedData.forEach(function (d) {
+                ws_data.push([
+                    d.date, d.shift, d.time, d.owner, d.loc, d.remark, d.vehicle, d.workers
+                ]);
+            });
+
+            // 建立 Sheet 和 Workbook
+            const worksheet = XLSX.utils.aoa_to_sheet(ws_data);
+
+            // 幫表格設定簡單的欄寬
+            worksheet['!cols'] = [
+                { wch: 10 }, { wch: 8 }, { wch: 10 }, { wch: 8 },
+                { wch: 40 }, { wch: 25 }, { wch: 15 }, { wch: 25 }
+            ];
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "整理後派工單");
+
+            // 觸發下載
+            XLSX.writeFile(workbook, "整理後派工單.xlsx");
+        });
+
+    </script>
+</body>
+
+</html>
