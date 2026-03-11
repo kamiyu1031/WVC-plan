@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-03-03T07:19:12.819Z",
+  "savedAt": "2026-03-10T07:29:54.548Z",
   "currentMonth": "2026-03",
   "workers": [
     {
@@ -41,12 +41,12 @@
     {
       "id": 8,
       "name": "廖旻揆",
-      "short": "旻"
+      "short": "揆"
     },
     {
       "id": 9,
       "name": "莊盛傑",
-      "short": "盛"
+      "short": "傑"
     },
     {
       "id": 10,
@@ -61,7 +61,7 @@
     {
       "id": 12,
       "name": "劉文傑",
-      "short": "傑"
+      "short": "劉"
     },
     {
       "id": 13,
@@ -71,7 +71,7 @@
     {
       "id": 14,
       "name": "蕭承晉",
-      "short": "晉"
+      "short": "蕭"
     },
     {
       "id": 15,
@@ -166,21 +166,21 @@
       "label": "早班",
       "bg": "#A9D18E",
       "borderStyle": "solid",
-      "borderColor": "#333333",
+      "borderColor": "#BFBFBF",
       "textColor": "#333333"
     },
     "status_2": {
       "label": "晚班",
       "bg": "#70AD47",
       "borderStyle": "solid",
-      "borderColor": "#FF0000",
+      "borderColor": "#333333",
       "textColor": "#ffffff"
     },
     "status_3": {
       "label": "連班",
       "bg": "#4D7731",
       "borderStyle": "dashed",
-      "borderColor": "#333333",
+      "borderColor": "#FF0000",
       "textColor": "#ffffff"
     },
     "status_4": {
@@ -242,36 +242,64 @@
   },
   "shifts": {
     "2026-03-06": {
-      "吳文龍": "dayoff",
-      "陳禮宏": "sick"
+      "吳文龍": "status_2",
+      "陳禮宏": "status_2",
+      "呂世欽": "status_2",
+      "點-胡哲維": "status_5",
+      "黃品融": "status_2",
+      "莊盛傑": "status_2",
+      "李祐緯": "status_2",
+      "劉文傑": "status_2",
+      "蕭承晉": "status_2",
+      "張成億": "status_2",
+      "許朝淵": "status_2",
+      "周啟智": "status_2",
+      "邱宗賢": "status_2",
+      "廖旻揆": "status_2"
     },
     "2026-03-09": {
-      "廖旻揆": "awol"
+      "廖旻揆": "status_2",
+      "點-胡哲維": "status_5",
+      "呂世欽": "status_2",
+      "李祐緯": "status_2",
+      "周啟智": "status_2",
+      "林宏叡": "status_2",
+      "許朝淵": "status_2",
+      "莊盛傑": "status_2",
+      "劉文傑": "status_2",
+      "張成億": "status_2",
+      "黃品融": "status_2",
+      "陳禮宏": "status_2",
+      "吳文龍": "status_2",
+      "點-測試": "status_5",
+      "陳清建": "status_2"
+    },
+    "2026-02-26": {
+      "呂世欽": "status_2",
+      "莊盛傑": "status_2",
+      "邱宗賢": "status_2",
+      "李祐緯": "status_2",
+      "周啟智": "status_2",
+      "陳禮宏": "status_2"
     },
     "2026-03-02": {
-      "呂世欽": "status_3",
-      "邱宗賢": "status_8",
-      "許朝淵": "status_3",
-      "廖旻揆": "status_3",
-      "莊盛傑": "status_8",
-      "張成億": "status_8",
-      "李祐緯": "status_3",
-      "劉文傑": "status_3",
-      "亞納": "status_3",
-      "點-測試": "status_5",
-      "吳文龍": "status_3",
-      "周啟智": "status_3",
-      "黃品融": "status_3",
-      "蕭承晉": "status_3",
-      "陳禮宏": "status_3",
-      "23-蘇南迪": "status_3",
+      "呂世欽": "status_1",
+      "吳文龍": "status_1",
+      "周啟智": "status_1",
+      "許朝淵": "status_1",
+      "邱宗賢": "status_1",
       "點-胡哲維": "status_5",
-      "林宏叡": "status_3",
-      "21-亞納": "status_3",
-      "13-普萬托": "status_3"
+      "黃品融": "status_1",
+      "張成億": "status_1",
+      "莊盛傑": "status_1",
+      "李祐緯": "status_1",
+      "劉文傑": "status_1",
+      "林宏叡": "status_1",
+      "蕭承晉": "status_1",
+      "陳禮宏": "status_1",
+      "廖旻揆": "status_1"
     },
     "2026-03-03": {
-      "陳清建": "status_4",
       "呂世欽": "status_1",
       "李祐緯": "status_1",
       "周啟智": "status_1",
@@ -286,14 +314,6 @@
       "陳禮宏": "status_1",
       "吳文龍": "status_1",
       "蕭承晉": "status_1"
-    },
-    "2026-02-26": {
-      "呂世欽": "status_2",
-      "莊盛傑": "status_2",
-      "邱宗賢": "status_2",
-      "李祐緯": "status_2",
-      "周啟智": "status_2",
-      "陳禮宏": "status_2"
     },
     "2026-03-04": {
       "呂世欽": "status_1",
@@ -310,6 +330,519 @@
       "陳禮宏": "status_1",
       "吳文龍": "status_1",
       "蕭承晉": "status_1"
+    },
+    "2026-03-05": {
+      "吳文龍": "status_3",
+      "邱宗賢": "status_1",
+      "呂世欽": "status_2",
+      "點-胡哲維": "status_5",
+      "黃品融": "status_2",
+      "陳禮宏": "status_2",
+      "莊盛傑": "status_2",
+      "李祐緯": "status_2",
+      "劉文傑": "status_2",
+      "蕭承晉": "status_2",
+      "張成億": "status_2",
+      "許朝淵": "status_2",
+      "林宏叡": "status_2",
+      "廖旻揆": "status_2"
+    },
+    "2026-03-07": {
+      "點-胡哲維": "status_5",
+      "蕭承晉": "status_3",
+      "劉文傑": "status_3",
+      "林宏叡": "status_3",
+      "張成億": "status_3",
+      "廖旻揆": "status_3",
+      "呂世欽": "status_2",
+      "李祐緯": "status_2",
+      "周啟智": "status_2",
+      "邱宗賢": "status_2",
+      "許朝淵": "status_2",
+      "莊盛傑": "status_2",
+      "黃品融": "status_2",
+      "陳禮宏": "status_2",
+      "吳文龍": "status_2"
+    },
+    "2026-03-08": {
+      "呂世欽": "status_2",
+      "李祐緯": "status_2",
+      "周啟智": "status_2",
+      "邱宗賢": "status_2",
+      "林宏叡": "status_2",
+      "點-胡哲維": "status_5",
+      "許朝淵": "status_2",
+      "莊盛傑": "status_2",
+      "劉文傑": "status_2",
+      "張成億": "status_2",
+      "黃品融": "status_2",
+      "陳禮宏": "status_2",
+      "吳文龍": "status_2",
+      "廖旻揆": "status_2"
+    },
+    "2026-03-10": {
+      "陳易璘": "status_6",
+      "吳文龍": "status_2",
+      "陳清建": "status_2",
+      "呂世欽": "status_2",
+      "邱宗賢": "status_2",
+      "周啟智": "status_2",
+      "許朝淵": "status_2",
+      "廖旻揆": "status_2",
+      "莊盛傑": "status_6",
+      "張成億": "status_2",
+      "李祐緯": "status_2",
+      "劉文傑": "status_2",
+      "黃品融": "status_2",
+      "蕭承晉": "status_2",
+      "陳禮宏": "status_2",
+      "林宏叡": "status_2",
+      "21-亞納": "status_6",
+      "23-蘇南迪": "status_6",
+      "13-普萬托": "status_6",
+      "點-胡哲維": "status_6",
+      "點-測試": "status_6",
+      "點-測試2": "status_6"
     }
-  }
+  },
+  "shiftTimes": {
+    "2026-03-05": {
+      "morning": "10:00",
+      "evening": "22:00"
+    },
+    "2026-03-11": {
+      "morning": "10:00"
+    }
+  },
+  "tasks": {
+    "2026-03-05": [],
+    "2026-03-09": [],
+    "2026-03-08": [
+      {
+        "owner": "稻田",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "公館圓環(紅白邊線刨除",
+        "remarks": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "裝備保養.工廠整理",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-10": [],
+    "2026-03-13": [],
+    "2026-03-11": [],
+    "2026-03-02": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "新北市道102線(15K+000~20K+900)",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "施工前中後(完成照順向拍.路口照",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "229下班後清空，要驗車",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道102甲線(0K+000~5K+000)(新增槽化30",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "施工前中後(完成照順向拍.路口照",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "槽化要完成照",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-04": [
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "7771驗車",
+        "remarks": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "鶯歌石膏",
+        "remarks": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "康寧路一段(成功路三段與星雲街)",
+        "remarks": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "市道106 線 (50K+000~70K+000)",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "料區整理",
+        "remarks": "10:00",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-07": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "市道102線(15K+000~20K+900)",
+        "remarks": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "早班",
+        "address": "製組*1.多張完成照(每處路口請標示路口名",
+        "remarks": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道106 線 (50K+000~70K+000",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*1.每處完成照(需標註路名巷口",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩(六標",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "安和路二段20號",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "樂利路47號(行穿",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "新生南路三段2號填縫",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "施工前中後",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "早上要連班的人.以21-06為段落",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道102甲線(0K+000~5K+000",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*1.每處完成照(需標註路名巷口",
+        "remarks": "21:00",
+        "customOwner": true,
+        "customProject": true
+      }
+    ]
+  },
+  "materials": {
+    "2026-03-09": [],
+    "2026-03-08": [
+      {
+        "tool": "刨除機+黑漆",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-02": [
+      {
+        "tool": "45%(有線就好.不見底",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "45%(有線就好.不見底",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-04": [
+      {
+        "tool": "採圖.錄影.有問題的要拍照",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "採圖路口要標記路名",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-07": [
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.65",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "瀝青",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "防撞桿*24",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ]
+  },
+  "missionConfig": [
+    {
+      "業主": "磐碩",
+      "標案": "養工3區",
+      "區域": "台灣郵政地址所有項目(新北市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "養工7區",
+      "區域": "台灣郵政地址所有項目(新北市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "養工8區",
+      "區域": "台灣郵政地址所有項目(新北市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "8上",
+      "區域": "台灣郵政地址所有項目(台北市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "8下",
+      "區域": "台灣郵政地址所有項目(台北市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "公路局",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "農業局1區",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "大園",
+      "區域": "台灣郵政地址所有項目(桃園市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "專案5標",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "桃園1區",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "巡查3標",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "巡查6標",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "上溢",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "逢國",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "冠筑",
+      "標案": "冠筑",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "稻田",
+      "標案": "稻田",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "福呈",
+      "標案": "福呈",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "矽昌",
+      "標案": "矽昌",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    }
+  ]
 }

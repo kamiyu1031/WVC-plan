@@ -27,6 +27,8 @@
     const X = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>);
     const Users = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>);
     const AlertCircle = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>);
+    const Eye = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>);
+    const EyeOff = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><line x1="2" x2="22" y1="2" y2="22" /></svg>);
 
     // === 定義排班狀態與對應顏色 (以 Excel 「狀態」工作表為主) ===
     const DEFAULT_STATUS_TYPES = {
@@ -75,8 +77,18 @@
       const [showTextInput, setShowTextInput] = useState(false); // 文字輸入排班 Modal
       const [textInputValue, setTextInputValue] = useState(''); // 文字輸入內容
       const [textInputResult, setTextInputResult] = useState(null); // 文字輸入結果訊息
-      const [workersList, setWorkersList] = useState(DEFAULT_WORKERS); // 動態工班名單
+      const [workersHistory, setWorkersHistory] = useState({ '2000-01-01': DEFAULT_WORKERS }); // 動態工班名單 (歷史記錄)
       const [statusTypes, setStatusTypes] = useState(DEFAULT_STATUS_TYPES); // 動態狀態圖例
+
+      const getWorkersForDate = (history, dateStr) => {
+        const dates = Object.keys(history).sort();
+        let latestDate = dates[0];
+        for (const d of dates) {
+          if (d <= dateStr) latestDate = d;
+          else break;
+        }
+        return history[latestDate] || DEFAULT_WORKERS;
+      };
 
       // 儲存排班資料: Key 為 YYYY-MM-DD, Value 為 { '工人A': 'morning', '工人B': 'dayoff' }
       // 預設為空，若某天某工人沒有紀錄，則視為 'unassign' (未派)
@@ -100,6 +112,7 @@
       const [showUnfinishedTasks, setShowUnfinishedTasks] = useState(false); // 待辦任務彈出列表
       const [wizardStep, setWizardStep] = useState(1);
       const [wizardData, setWizardData] = useState({ owner: '', project: '', city: '', region: '', address: '', remarks: '', customOwner: false, customProject: false });
+      const [editingWorker, setEditingWorker] = useState(null); // 新增：正在編輯的人員資料
 
       const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
 
@@ -248,10 +261,11 @@
       const handleResetAllToBlock = () => {
         if (!selectedDateStr) return;
         const blockKey = Object.keys(statusTypes).find(k => k === 'block' || statusTypes[k].label === '擋班') || 'block';
+        const currentWorkersList = getWorkersForDate(workersHistory, selectedDateStr);
         setShifts(prev => {
           const dailyData = {};
-          workersList.forEach(w => {
-            if (w.name !== '0') {
+          currentWorkersList.forEach(w => {
+            if (w.name !== '0' && !w.hidden) {
               dailyData[w.name] = blockKey;
             }
           });
@@ -265,7 +279,8 @@
       if (selectedDateStr) {
         const dailyShifts = shifts[selectedDateStr] || {};
         const presentKeys = ['morning', 'evening', 'double', 'block'];
-        const activeWorkers = workersList.filter(w => w.name !== '0');
+        const currentWorkersList = getWorkersForDate(workersHistory, selectedDateStr);
+        const activeWorkers = currentWorkersList.filter(w => w.name !== '0' && !w.hidden);
         activeWorkers.forEach(w => {
           const st = dailyShifts[w.name] || Object.keys(statusTypes)[0];
           const info = statusTypes[st];
@@ -306,7 +321,8 @@
         });
 
         const getShortName = (fullName) => {
-          const match = workersList.find(w => w.name === fullName || `工班員 ${w.id}` === fullName);
+          const currentWorkersList = getWorkersForDate(workersHistory, selectedDateStr);
+          const match = currentWorkersList.find(w => w.name === fullName || `工班員 ${w.id}` === fullName);
           return match ? match.short : fullName;
         };
 
@@ -341,7 +357,8 @@
           version: 1,
           savedAt: new Date().toISOString(),
           currentMonth: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`,
-          workers: workersList,
+          workersHistory: workersHistory,
+          workers: workersHistory['2000-01-01'] || workersHistory[Object.keys(workersHistory)[0]],
           statuses: statusTypes,
           shifts: shifts,
           shiftTimes: shiftTimes,
@@ -367,7 +384,8 @@
         reader.onload = (evt) => {
           try {
             const data = JSON.parse(evt.target.result);
-            if (data.workers) setWorkersList(data.workers);
+            if (data.workersHistory) setWorkersHistory(data.workersHistory);
+            else if (data.workers) setWorkersHistory({ '2000-01-01': data.workers });
             if (data.statuses) setStatusTypes(data.statuses);
             if (data.shifts) setShifts(data.shifts);
             if (data.shiftTimes) setShiftTimes(data.shiftTimes);
@@ -461,13 +479,15 @@
         const unmatched = [];
         const newDailyData = { ...(shifts[targetDateStr] || {}) };
 
+        const targetWorkersList = getWorkersForDate(workersHistory, targetDateStr);
+
         // 找出名稱以「點-」開頭的工班人員
-        const dotWorkers = workersList.filter(w => w.name.startsWith('點-'));
+        const dotWorkers = targetWorkersList.filter(w => w.name.startsWith('點-') && !w.hidden);
         let dotWorkerIndex = 0;
 
         shortNames.forEach(shortName => {
-          // 在 workersList 中尋找匹配的 short
-          const worker = workersList.find(w => w.short === shortName && w.name !== '0');
+          // 在 targetWorkersList 中尋找匹配的 short
+          const worker = targetWorkersList.find(w => w.short === shortName && w.name !== '0' && !w.hidden);
           if (worker) {
             newDailyData[worker.name] = statusKey;
             matched.push(`${worker.name}(${shortName})`);
@@ -575,7 +595,15 @@
               newWorkers.push({ id: idVal || i, name: nameStr, short: shortStr });
             }
             if (newWorkers.length > 0) {
-              setWorkersList(newWorkers);
+              const targetDate = formatDateString(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+              setWorkersHistory(prev => {
+                const newHistory = { ...prev };
+                newHistory[targetDate] = newWorkers;
+                Object.keys(newHistory).forEach(key => {
+                  if (key > targetDate) delete newHistory[key];
+                });
+                return newHistory;
+              });
             }
 
             // === 解析「狀態」工作表 ===
@@ -781,10 +809,12 @@
         todayStart.setHours(0, 0, 0, 0);
         const isPast = cellDate < todayStart;
 
+        const dailyWorkersList = getWorkersForDate(workersHistory, dateStr);
+
         // 計算出勤與未出勤統計
         const presentKeys = ['morning', 'evening', 'double', 'block'];
         const absentKeys = ['dayoff', 'unassign', 'personal', 'sick', 'awol', 'injury', 'funeral', 'paternity'];
-        const activeWorkers = workersList.filter(w => w.name !== '0');
+        const activeWorkers = dailyWorkersList.filter(w => w.name !== '0' && !w.hidden);
         const totalWorkers = activeWorkers.length;
 
         // 統計每位工人的狀態
@@ -832,86 +862,114 @@
 
             {/* 出勤/未出勤統計已移至排班 Modal */}
 
-            {/* 人員色彩矩陣 (Color Grid) - 隱藏空缺位 */}
-            <div className="mt-auto pt-1 grid grid-cols-5 gap-[1px]">
-              {workersList.filter(w => w.name !== '0').map((workerObj, idx) => {
-                const workerName = workerObj.name;
-                const statusKey = dailyShifts[workerName] || Object.keys(statusTypes)[0];
-                const statusInfo = statusTypes[statusKey] || Object.values(statusTypes)[0];
+            {/* 內容區塊：人員、任務、料件 */}
+            <div className="mt-1 w-full flex flex-col gap-0.5 flex-1">
+              {/* 人員 */}
+              <div className="bg-slate-50 rounded-sm px-1 py-0.5 text-[10px] sm:text-[11px] leading-tight text-slate-700 border border-slate-200/60 shrink-0">
+                <div className="font-bold border-b border-slate-200/60 mb-0.5 pb-px flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>人員
+                </div>
+                <div className="grid grid-cols-5 gap-[1px] pt-px">
+                  {activeWorkers.map((workerObj, idx) => {
+                    const workerName = workerObj.name;
+                    const statusKey = dailyShifts[workerName] || Object.keys(statusTypes)[0];
+                    const statusInfo = statusTypes[statusKey] || Object.values(statusTypes)[0];
 
-                const cellStyle = {
-                  backgroundColor: statusInfo.bg,
-                  color: statusInfo.textColor,
-                  borderWidth: statusInfo.borderStyle !== 'none' ? '2px' : '1px',
-                  borderStyle: statusInfo.borderStyle !== 'none' ? statusInfo.borderStyle : 'solid',
-                  borderColor: statusInfo.borderStyle !== 'none' ? statusInfo.borderColor : (statusInfo.bg === '#FFFFFF' ? '#ccc' : statusInfo.bg),
-                };
+                    const cellStyle = {
+                      backgroundColor: statusInfo.bg,
+                      color: statusInfo.textColor,
+                      borderWidth: statusInfo.borderStyle !== 'none' ? '2px' : '1px',
+                      borderStyle: statusInfo.borderStyle !== 'none' ? statusInfo.borderStyle : 'solid',
+                      borderColor: statusInfo.borderStyle !== 'none' ? statusInfo.borderColor : (statusInfo.bg === '#FFFFFF' ? '#ccc' : statusInfo.bg),
+                    };
 
-                return (
-                  <div
-                    key={idx}
-                    title={`${workerName}: ${statusInfo.label}`}
-                    style={cellStyle}
-                    className="w-full aspect-square rounded-sm flex items-center justify-center text-[10px] sm:text-[11px] cursor-help select-none font-medium opacity-90 hover:opacity-100 overflow-hidden leading-none tracking-tighter"
-                  >
-                    {workerObj.short}
+                    return (
+                      <div
+                        key={idx}
+                        title={`${workerName}: ${statusInfo.label}`}
+                        style={cellStyle}
+                        className="w-full aspect-square rounded-sm flex items-center justify-center text-[10px] sm:text-[11px] cursor-help select-none font-medium opacity-90 hover:opacity-100 overflow-hidden leading-none tracking-tighter"
+                      >
+                        {workerObj.short}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 任務 */}
+              {tasks[dateStr] && tasks[dateStr].length > 0 && (
+                <div className="bg-slate-50 rounded-sm px-1 py-0.5 text-[10px] sm:text-[11px] leading-tight text-slate-700 border border-slate-200/60 shrink-0">
+                  <div className="font-bold border-b border-slate-200/60 mb-0.5 pb-px flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>任務
                   </div>
-                );
-              })}
-            </div>
-
-            {/* 任務與料件區塊 */}
-            {((tasks[dateStr] && tasks[dateStr].length > 0) || (materials[dateStr] && materials[dateStr].length > 0)) && (
-              <div className="mt-1 pt-0.5 border-t border-gray-200 flex flex-col gap-0.5 w-full">
-                {tasks[dateStr] && tasks[dateStr].length > 0 && (
-                  <div className="bg-amber-50 rounded-sm px-1 py-0.5 text-[10px] sm:text-[11px] leading-tight text-amber-800 border border-amber-200/50">
-                    <div className="font-bold border-b border-amber-200/50 mb-0.5 pb-px opacity-80 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>任務
-                    </div>
-                    <div className="flex flex-col gap-px pl-1">
-                      {tasks[dateStr].map((t, idx) => (
+                  <div className="flex flex-col gap-px pl-1 pt-px">
+                    {tasks[dateStr].map((t, idx) => {
+                      const prefix = `${String(idx + 1).padStart(2, '0')}-`;
+                      return (
                         <div key={idx} title={`${t.owner} / ${t.region} / ${t.address} ${t.remarks ? '(' + t.remarks + ')' : ''}`}>
                           {isPast ? (
-                            <div className="truncate">
-                              {t.address || t.region || '無地址'}
+                            <div className="truncate flex items-center">
+                              <span className="font-bold text-slate-500/80 mr-0.5 shrink-0">{prefix}</span>
+                              <span className="truncate">{t.address || t.region || '無地址'}</span>
                             </div>
                           ) : (
                             <marquee scrollamount="2" className="flex items-center">
+                              <span className="font-bold text-slate-500/80 mr-0.5">{prefix}</span>
                               <span className="font-medium">{t.owner}</span> {t.region} {t.address} {t.remarks ? `(${t.remarks})` : ''}
                             </marquee>
                           )}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                )}
-                {materials[dateStr] && materials[dateStr].length > 0 && (
-                  <div className="bg-teal-50 rounded-sm px-1 py-0.5 text-[10px] sm:text-[11px] leading-tight text-teal-800 border border-teal-200/50 mt-0.5">
-                    <div className="font-bold border-b border-teal-200/50 mb-0.5 pb-px opacity-80 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span>使用料件
-                    </div>
-                    <div className="flex flex-col gap-px pl-1">
-                      {materials[dateStr].map((m, idx) => (
-                        <div key={idx} title={`${m.tool} - ${m.rawMaterial} : ${m.quantity}`}>
-                          {isPast ? (
-                            <div className="truncate">
-                              <span className="font-medium">{m.tool}</span> <span className="opacity-70 mx-1">{m.rawMaterial}</span> <span className="text-teal-600 font-bold ml-0.5">{m.quantity}</span>
-                            </div>
-                          ) : (
-                            <marquee scrollamount="2" className="flex items-center">
-                              <span className="font-medium">{m.tool}</span> <span className="opacity-70 mx-1">{m.rawMaterial}</span> <span className="text-teal-600 font-bold ml-0.5">{m.quantity}</span>
-                            </marquee>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                </div>
+              )}
+
+              {/* 料件 */}
+              {materials[dateStr] && materials[dateStr].length > 0 && (
+                <div className="mt-auto bg-slate-50 rounded-sm px-1 py-0.5 text-[10px] sm:text-[11px] leading-tight text-slate-700 border border-slate-200/60 shrink-0">
+                  <div className="font-bold border-b border-slate-200/60 mb-0.5 pb-px flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>用料
                   </div>
-                )}
-              </div>
-            )}
+                  <div className="flex flex-col gap-px pl-1 pt-px">
+                    {materials[dateStr].map((m, idx) => (
+                      <div key={idx} title={`${m.tool} - ${m.rawMaterial} : ${m.quantity}`}>
+                        {isPast ? (
+                          <div className="truncate">
+                            <span className="font-medium">{m.tool}</span> <span className="opacity-70 mx-1">{m.rawMaterial}</span> <span className="text-slate-900 font-bold ml-0.5">{m.quantity}</span>
+                          </div>
+                        ) : (
+                          <marquee scrollamount="2" className="flex items-center">
+                            <span className="font-medium">{m.tool}</span> <span className="opacity-70 mx-1">{m.rawMaterial}</span> <span className="text-slate-900 font-bold ml-0.5">{m.quantity}</span>
+                          </marquee>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         );
       });
+
+      const handleExportWorkers = () => {
+        const targetDate = selectedDateStr || formatDateString(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        const currentList = getWorkersForDate(workersHistory, targetDate);
+        const data = [['編號', '工班人員名稱', '簡稱', '是否不顯示']];
+        currentList.forEach(w => {
+          data.push([w.id, w.name, w.short, w.hidden ? '是' : '否']);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "工班清單");
+        XLSX.writeFile(wb, `工班人員清單_${targetDate}.xlsx`);
+      };
+
+      const todayForGlobal = new Date();
+      const todayGlobalStr = formatDateString(todayForGlobal.getFullYear(), todayForGlobal.getMonth(), todayForGlobal.getDate());
+      const headerWorkersList = getWorkersForDate(workersHistory, selectedDateStr || todayGlobalStr);
 
       return (
         <div className="min-h-screen bg-slate-100 py-6 px-2 sm:px-6 lg:px-8 font-sans">
@@ -925,14 +983,19 @@
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-gray-800">工班出勤排班表</h1>
-                  <p className="text-sm text-gray-500">總編制：{workersList.length} 人</p>
+                  <p className="text-sm text-gray-500">總編制：{headerWorkersList.length} 人</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 flex-wrap bg-slate-50 p-1.5 rounded-xl border border-gray-200">
+                <button onClick={handleExportWorkers} className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                  匯出人員清單
+                </button>
+
                 <label className="cursor-pointer flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
-                  匯入 Excel
+                  匯入人員清單
                   <input type="file" accept=".xlsx, .xls" onChange={handleExcelUpload} className="hidden" />
                 </label>
 
@@ -1143,7 +1206,7 @@
                 {/* Modal Body: 人員清單 */}
                 <div className="p-6 overflow-y-auto bg-white flex-1">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {workersList.map((workerObj) => {
+                    {getWorkersForDate(workersHistory, selectedDateStr).map((workerObj) => {
                       const workerName = workerObj.name !== '0' ? workerObj.name : `空缺位 ${workerObj.id}`;
                       const dataKey = workerObj.name !== '0' ? workerObj.name : `工班員 ${workerObj.id}`;
                       const firstKey = Object.keys(statusTypes)[0];
@@ -1161,10 +1224,17 @@
                       return (
                         <div key={workerObj.id} className={`flex items-center justify-between p-3 rounded-xl border transition-colors
                       ${currentStatus === firstKey ? 'bg-gray-50 border-gray-200' : 'bg-blue-50/50 border-blue-200'}
+                      ${workerObj.hidden || workerObj.name === '0' ? 'opacity-50 grayscale' : ''}
                     `}>
-                          <div className="flex items-center gap-2">
-                            <div style={dotStyle}></div>
-                            <span className="font-medium text-gray-700">{workerName} {workerObj.name !== '0' && <span className="text-xs text-gray-400">({workerObj.short})</span>}</span>
+                          <div className="flex items-center gap-2 w-full overflow-hidden mr-2">
+                            <div
+                              className="flex items-center gap-2 cursor-pointer hover:bg-black/5 p-1 rounded transition-colors flex-1 truncate"
+                              title="點擊編輯人員資料"
+                              onClick={() => setEditingWorker({ ...workerObj })}
+                            >
+                              <div style={dotStyle} className="shrink-0"></div>
+                              <span className="font-medium text-gray-700 truncate">{workerName} {workerObj.name !== '0' && <span className="text-xs text-gray-400">({workerObj.short})</span>}</span>
+                            </div>
                           </div>
 
                           <select
@@ -1342,6 +1412,68 @@
                     className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl shadow-sm transition-colors focus:ring-4 focus:ring-amber-500/20"
                   >
                     套用排班
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 人員資料編輯 Modal */}
+          {editingWorker && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[70]">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-blue-50">
+                  <h2 className="text-lg font-bold text-blue-800 flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    編輯人員資料
+                  </h2>
+                  <button onClick={() => setEditingWorker(null)} className="text-gray-400 hover:text-gray-700">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-6 space-y-4 bg-white">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">人員姓名 (輸入 0 設為空缺)：</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-gray-800" value={editingWorker.name} onChange={e => setEditingWorker({ ...editingWorker, name: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">人員簡稱：</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-gray-800" value={editingWorker.short} onChange={e => setEditingWorker({ ...editingWorker, short: e.target.value })} />
+                  </div>
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-sm font-bold text-gray-700">月曆顯示狀態：</span>
+                    <button
+                      onClick={() => setEditingWorker({ ...editingWorker, hidden: !editingWorker.hidden })}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border font-medium transition-colors cursor-pointer ${editingWorker.hidden ? 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200' : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'}`}
+                    >
+                      {editingWorker.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {editingWorker.hidden ? '隱藏不顯示' : '正常顯示'}
+                    </button>
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                  <button onClick={() => setEditingWorker(null)} className="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-xl transition-colors">
+                    取消
+                  </button>
+                  <button
+                    onClick={() => {
+                      setWorkersHistory(prev => {
+                        const newHistory = { ...prev };
+                        const currentList = getWorkersForDate(prev, selectedDateStr);
+                        const newList = currentList.map(w => w.id === editingWorker.id ? { ...w, name: editingWorker.name.trim(), short: editingWorker.short.trim(), hidden: editingWorker.hidden } : w);
+                        newHistory[selectedDateStr] = newList;
+                        Object.keys(newHistory).forEach(k => {
+                          if (k >= selectedDateStr) {
+                            newHistory[k] = newHistory[k].map(w => w.id === editingWorker.id ? { ...w, name: editingWorker.name.trim(), short: editingWorker.short.trim(), hidden: editingWorker.hidden } : w);
+                          }
+                        });
+                        return newHistory;
+                      });
+                      setEditingWorker(null);
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors"
+                  >
+                    儲存變更
                   </button>
                 </div>
               </div>
