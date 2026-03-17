@@ -79,6 +79,7 @@
       const [textInputResult, setTextInputResult] = useState(null); // 文字輸入結果訊息
       const [workersHistory, setWorkersHistory] = useState({ '2000-01-01': DEFAULT_WORKERS }); // 動態工班名單 (歷史記錄)
       const [statusTypes, setStatusTypes] = useState(DEFAULT_STATUS_TYPES); // 動態狀態圖例
+      const [vehicleList, setVehicleList] = useState([]); // 車輛清單資料
 
       const getWorkersForDate = (history, dateStr) => {
         const dates = Object.keys(history).sort();
@@ -108,11 +109,23 @@
 
       // === Wizard 狀態 ===
       const [missionConfig, setMissionConfig] = useState([{ "業主": "磐碩", "標案": "養工3區", "區域": "台灣郵政地址所有項目(新北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "養工7區", "區域": "台灣郵政地址所有項目(新北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "養工8區", "區域": "台灣郵政地址所有項目(新北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "8上", "區域": "台灣郵政地址所有項目(台北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "8下", "區域": "台灣郵政地址所有項目(台北市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "公路局", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "農業局1區", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "大園", "區域": "台灣郵政地址所有項目(桃園市XX區)", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "專案5標", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "桃園1區", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "巡查3標", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "巡查6標", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "上溢", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "磐碩", "標案": "逢國", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "冠筑", "標案": "冠筑", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "稻田", "標案": "稻田", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "福呈", "標案": "福呈", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }, { "業主": "矽昌", "標案": "矽昌", "區域": "台灣郵政地址所有項目", "地址": "前項區域所有路名" }]); // 從 mission-list 匯入的預設列表
+      const [wizardVehicles, setWizardVehicles] = useState(['A', 'B', 'C', 'D', 'E']);
       const [showTaskWizard, setShowTaskWizard] = useState(false);
       const [showUnfinishedTasks, setShowUnfinishedTasks] = useState(false); // 待辦任務彈出列表
+      const [isEditingUnfinished, setIsEditingUnfinished] = useState(false);
+      const [newUnfinishedLoc, setNewUnfinishedLoc] = useState('');
+      const [newUnfinishedRemark, setNewUnfinishedRemark] = useState('');
       const [wizardStep, setWizardStep] = useState(1);
-      const [wizardData, setWizardData] = useState({ owner: '', project: '', city: '', region: '', address: '', remarks: '', customOwner: false, customProject: false });
+      const [wizardData, setWizardData] = useState({ owner: '', project: '', city: '', region: '', address: '', remarks: '', vehicle: '', customOwner: false, customProject: false });
       const [editingWorker, setEditingWorker] = useState(null); // 新增：正在編輯的人員資料
+      const [editingStatusKey, setEditingStatusKey] = useState(null); // 正在編輯的狀態圖例Key
+      const [editingStatusForm, setEditingStatusForm] = useState(null); // 正在編輯的狀態圖例表單
+      const [globalDarkMode, setGlobalDarkMode] = useState(false); // 全域黑暗模式
+      
+      const [showPresetMaterials, setShowPresetMaterials] = useState(false);
+      const [isEditingMaterialPreset, setIsEditingMaterialPreset] = useState(false);
+      const [newMaterialPresetName, setNewMaterialPresetName] = useState('');
+      const [presetMaterials, setPresetMaterials] = useState(['熱拌 65% (0.65)', '熱拌 50% (0.50)', '熱拌 45% (0.45)', '冷塑', '黑漆', '白漆', '黃油漆', '底油', '藍粉', '乙料', '防撞桿', '貓眼', '瀝青車', '磨線機 / 磨除機 / 刨除機', '貓眼機', '電鑽 + 發電機', '紅白推車', '熱貼/熱拌', '防撞桿 / 軟質桿', '水車', '石膏', '槽化線', '行人符號']);
 
       const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
 
@@ -177,7 +190,7 @@
 
       // === 任務與料件管理 ===
       const handleAddTask = () => {
-        setWizardData({ owner: '', project: '', city: '', region: '', address: '', remarks: '', customOwner: false, customProject: false });
+        setWizardData({ owner: '', project: '', city: '', region: '', address: '', remarks: '', vehicle: '', customOwner: false, customProject: false });
         setWizardStep(1);
         setShowUnfinishedTasks(false);
         setShowTaskWizard(true);
@@ -192,7 +205,8 @@
             project: '',
             region: '',
             address: taskDesc,
-            remarks: '未完工作'
+            remarks: '未完工作',
+            vehicle: ''
           });
           return { ...prev, [selectedDateStr]: daily };
         });
@@ -207,7 +221,8 @@
             project: wizardData.project,
             region: (wizardData.city + wizardData.region).trim(),
             address: wizardData.address,
-            remarks: wizardData.remarks
+            remarks: wizardData.remarks,
+            vehicle: wizardData.vehicle || ''
           });
           return { ...prev, [selectedDateStr]: daily };
         });
@@ -365,6 +380,10 @@
           tasks: tasks,
           materials: materials,
           missionConfig: missionConfig,
+          vehicleList: vehicleList,
+          unfinishedTasks: unfinishedTasks,
+          presetMaterials: presetMaterials,
+          wizardVehicles: wizardVehicles,
         };
         const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -392,6 +411,10 @@
             if (data.tasks) setTasks(data.tasks);
             if (data.materials) setMaterials(data.materials);
             if (data.missionConfig) setMissionConfig(data.missionConfig);
+            if (data.vehicleList) setVehicleList(data.vehicleList);
+            if (data.unfinishedTasks) setUnfinishedTasks(data.unfinishedTasks);
+            if (data.presetMaterials) setPresetMaterials(data.presetMaterials);
+            if (data.wizardVehicles) setWizardVehicles(data.wizardVehicles);
             if (data.currentMonth) {
               const parts = data.currentMonth.split('-');
               setCurrentDate(new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1));
@@ -520,7 +543,7 @@
         setTextInputResult({ type: 'success', message: resultMsg });
       };
 
-      // === 匯出 PDF (A4 橫向排版) ===
+      // === 匯出 PDF (A4 直向排版) ===
       const handleExportPDF = async () => {
         const el = document.getElementById('calendar-area');
         if (!el) { alert('找不到月曆區域'); return; }
@@ -535,28 +558,60 @@
           await new Promise(r => setTimeout(r, 100)); // 等待 UI 更新
 
           const canvas = await html2canvas(el, {
-            scale: 2,
+            scale: 2, // 縮小為2，搭配JPEG可大幅壓縮檔案至4MB以下
             useCORS: true,
             backgroundColor: '#ffffff',
             logging: false,
+            windowWidth: el.scrollWidth,
+            windowHeight: el.scrollHeight,
+            onclone: (clonedDoc) => {
+              // 修復 marquee 動態標籤以及 truncate 導致的垂直裁切問題
+              const marquees = clonedDoc.querySelectorAll('marquee');
+              marquees.forEach(mq => {
+                const div = clonedDoc.createElement('div');
+                div.innerHTML = mq.innerHTML;
+                div.className = mq.className;
+                
+                // 轉換為普通的單行截斷 div
+                div.style.overflow = 'hidden';
+                div.style.textOverflow = 'ellipsis';
+                div.style.whiteSpace = 'nowrap';
+                div.style.display = 'block';
+                div.style.lineHeight = '1.4';
+                div.style.paddingBottom = '2px';
+                
+                mq.parentNode.replaceChild(div, mq);
+              });
+              
+              // 確保所有被設定為 truncate 的標籤都有足夠行高
+              const truncates = clonedDoc.querySelectorAll('.truncate');
+              truncates.forEach(t => {
+                t.style.lineHeight = '1.4';
+                t.style.paddingBottom = '2px';
+              });
+            }
           });
 
           const { jsPDF } = window.jspdf;
-          // A4 橫向: 297mm x 210mm
-          const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-          const pageW = 287; // 內容寬度 (297-左右邊距)
-          const pageH = 200; // 內容高度 (210-上下邊距)
+          // A4 直向 (Portrait): 210mm x 297mm
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          const pageW = 190; // 內容寬度 (210-左右邊距 10x2)
+          const pageH = 277; // 內容高度 (297-上下邊距 10x2)
 
           const imgW = canvas.width;
           const imgH = canvas.height;
+          // 計算縮放比例以符合直式頁面，並維持置中
           const ratio = Math.min(pageW / imgW, pageH / imgH);
           const finalW = imgW * ratio;
           const finalH = imgH * ratio;
-          const offsetX = (297 - finalW) / 2;
-          const offsetY = (210 - finalH) / 2;
+          
+          // 計算水平置中與垂直置中的偏移量
+          const offsetX = (210 - finalW) / 2;
+          const offsetY = (297 - finalH) / 2;
 
-          const imgData = canvas.toDataURL('image/png');
-          pdf.addImage(imgData, 'PNG', offsetX, offsetY, finalW, finalH);
+          // 使用 JPEG 格式並設定 0.85 壓縮率大幅降低檔案大小
+          const imgData = canvas.toDataURL('image/jpeg', 0.85);
+          pdf.addImage(imgData, 'JPEG', offsetX, offsetY, finalW, finalH, undefined, 'FAST');
           pdf.save(`排班表_${currentYear}年${currentMonth + 1}月.pdf`);
 
           document.getElementById('pdf-loading')?.remove();
@@ -579,7 +634,7 @@
             const wb = XLSX.read(bstr, { type: 'binary' });
 
             // === 解析「工班清單」工作表 ===
-            const workerSheetName = wb.SheetNames.find(n => n.includes('清單') || n.includes('工班')) || wb.SheetNames[0];
+            const workerSheetName = wb.SheetNames.find(n => n.includes('工班') || (n.includes('清單') && !n.includes('車輛'))) || wb.SheetNames[0];
             const ws = wb.Sheets[workerSheetName];
             const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
@@ -590,9 +645,11 @@
               const idVal = row[0];
               const nameVal = row[1];
               const shortVal = row[2];
+              const vehicleVal = row[3];
               let nameStr = (nameVal === undefined || nameVal === null || String(nameVal).trim() === '' || String(nameVal).trim() === '0') ? '0' : String(nameVal).trim();
               let shortStr = (shortVal === undefined || shortVal === null) ? String(idVal || '') : String(shortVal).trim();
-              newWorkers.push({ id: idVal || i, name: nameStr, short: shortStr });
+              let vehicleStr = (vehicleVal === undefined || vehicleVal === null) ? '' : String(vehicleVal).trim();
+              newWorkers.push({ id: idVal || i, name: nameStr, short: shortStr, vehicle: vehicleStr });
             }
             if (newWorkers.length > 0) {
               const targetDate = formatDateString(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
@@ -604,6 +661,14 @@
                 });
                 return newHistory;
               });
+            }
+
+            // === 解析「車輛清單」工作表 ===
+            const vehicleSheetName = wb.SheetNames.find(n => n.includes('車輛清單') || n === '車輛清單');
+            if (vehicleSheetName) {
+              const vws = wb.Sheets[vehicleSheetName];
+              const vData = XLSX.utils.sheet_to_json(vws, { header: 1 });
+              setVehicleList(vData);
             }
 
             // === 解析「狀態」工作表 ===
@@ -681,15 +746,46 @@
           try {
             const bstr = evt.target.result;
             const wb = XLSX.read(bstr, { type: 'binary' });
-            const ws = wb.Sheets[wb.SheetNames[0]];
-            const data = XLSX.utils.sheet_to_json(ws);
 
-            if (data.length > 0) {
-              setMissionConfig(data);
-              alert(`成功匯入 ${data.length} 筆任務清單！`);
-            } else {
-              alert('未能在該檔案中找到任何有效資料。');
+            // Sheet 1: 任務清單
+            const wsTaskName = wb.SheetNames.find(n => n.includes('任務')) || wb.SheetNames[0];
+            if (wsTaskName) {
+              const wsTask = wb.Sheets[wsTaskName];
+              const taskData = XLSX.utils.sheet_to_json(wsTask);
+              if (taskData.length > 0) {
+                setMissionConfig(taskData);
+              }
             }
+
+            // Sheet 2: 代辦工作列表
+            const wsUnfinishedName = wb.SheetNames.find(n => n.includes('代辦'));
+            if (wsUnfinishedName) {
+              const wsUnfinished = wb.Sheets[wsUnfinishedName];
+              const unfinishedData = XLSX.utils.sheet_to_json(wsUnfinished);
+              const mappedUnfinished = unfinishedData.map(d => ({
+                loc: (d['地址'] || d['地址'] === 0) ? String(d['地址']).trim() : '',
+                remark: (d['備註'] || d['備註'] === 0) ? String(d['備註']).trim() : ''
+              })).filter(d => d.loc);
+              if (mappedUnfinished.length > 0) {
+                setUnfinishedTasks(mappedUnfinished);
+              }
+            }
+
+            // Sheet 3: 車輛配置組別
+            const wsVehicleName = wb.SheetNames.find(n => n.includes('車輛') || n.includes('組別'));
+            if (wsVehicleName) {
+              const wsVehicle = wb.Sheets[wsVehicleName];
+              const vehicleData = XLSX.utils.sheet_to_json(wsVehicle);
+              const mappedVehicles = vehicleData.map(d => {
+                const val = d['車輛組別'] || d['車輛配置組別'] || d[Object.keys(d)[0]];
+                return (val || val === 0) ? String(val).trim() : '';
+              }).filter(v => v);
+              if (mappedVehicles.length > 0) {
+                setWizardVehicles(mappedVehicles);
+              }
+            }
+
+            alert(`成功匯入任務清單相關設定！`);
           } catch (error) {
             console.error(error);
             alert('解析任務清單發生錯誤。');
@@ -697,6 +793,139 @@
         };
         reader.readAsBinaryString(file);
         e.target.value = '';
+      };
+
+      // 匯出任務清單
+      const handleExportMissionExcel = () => {
+        const wb = XLSX.utils.book_new();
+
+        // 1. 任務清單
+        const wsTask = XLSX.utils.json_to_sheet(missionConfig.length > 0 ? missionConfig : [{ "業主": "", "標案": "", "區域": "", "地址": "" }]);
+        XLSX.utils.book_append_sheet(wb, wsTask, "任務清單");
+
+        // 2. 代辦工作列表
+        const arrUnfinished = unfinishedTasks.length > 0 ? unfinishedTasks.map(t => ({ 地址: t.loc, 備註: t.remark || '' })) : [{ 地址: "", 備註: "" }];
+        const wsUnfinished = XLSX.utils.json_to_sheet(arrUnfinished);
+        XLSX.utils.book_append_sheet(wb, wsUnfinished, "代辦工作列表");
+
+        // 3. 車輛配置組別
+        const arrVehicles = wizardVehicles.length > 0 ? wizardVehicles.map(v => ({ 車輛組別: v })) : [{ 車輛組別: "" }];
+        const wsVehicles = XLSX.utils.json_to_sheet(arrVehicles);
+        XLSX.utils.book_append_sheet(wb, wsVehicles, "車輛配置組別");
+
+        const yyyy = new Date().getFullYear();
+        const mm = String(new Date().getMonth() + 1).padStart(2, '0');
+        const dd = String(new Date().getDate()).padStart(2, '0');
+        XLSX.writeFile(wb, `任務清單預設項目_${yyyy}${mm}${dd}.xlsx`);
+      };
+
+      // 匯出當月現有排班、任務與派工為 Excel
+      const handleExportWorkOrder = () => {
+        const exportData = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = formatDateString(currentYear, currentMonth, day);
+          const dailyShifts = shifts[dateStr] || {};
+          const dailyTasks = tasks[dateStr] || [];
+          const dailyMaterials = materials[dateStr] || [];
+          const times = shiftTimes[dateStr] || {};
+
+          const hasWorkers = Object.keys(dailyShifts).length > 0;
+          const hasTasks = dailyTasks.length > 0;
+          const hasMaterials = dailyMaterials.length > 0;
+
+          if (!hasWorkers && !hasTasks && !hasMaterials) continue; // 沒排任何東西的日期就跳過
+
+          const dailyWorkersList = getWorkersForDate(workersHistory, dateStr);
+          const activeWorkers = dailyWorkersList.filter(w => w.name !== '0' && !w.hidden);
+          
+          let morningWorkers = [];
+          let eveningWorkers = [];
+          
+          const presentKeys = ['morning', 'evening', 'double', 'block'];
+          
+          activeWorkers.forEach(w => {
+            const st = dailyShifts[w.name] || Object.keys(statusTypes)[0];
+            const info = statusTypes[st];
+            if (!info) return;
+
+            const lbl = info.label || '';
+            const presentLabels = ['早班', '晚班', '連班', '擋班'];
+            
+            if (presentKeys.includes(st) || presentLabels.includes(lbl)) {
+              const isMorning = lbl.includes('早班') || lbl.includes('連班') || st === 'morning' || st === 'double';
+              const isEvening = lbl.includes('晚班') || lbl.includes('連班') || st === 'evening' || st === 'double';
+              
+              const shortNameAndVehicle = w.vehicle ? `${w.short}[${w.vehicle}]` : w.short;
+              
+              if (isMorning) morningWorkers.push(shortNameAndVehicle);
+              if (isEvening) eveningWorkers.push(shortNameAndVehicle);
+              if (!isMorning && !isEvening) morningWorkers.push(shortNameAndVehicle); // 如果無法判斷，預設放早班
+            }
+          });
+
+          // 整理當日用料字串
+          const matTexts = dailyMaterials.map((m, idx) => {
+             return `${idx + 1}. ${m.tool} ${m.rawMaterial} ${m.quantity}`.trim();
+          }).join('\n');
+
+          const baseRow = {
+            '日期': `${currentMonth + 1}月${day}日`,
+            '星期': weekDays[(new Date(currentYear, currentMonth, day).getDay() + 6) % 7],
+            '早班時間': times.morning || '',
+            '早班人員': morningWorkers.join('、'),
+            '晚班時間': times.evening || '',
+            '晚班人員': eveningWorkers.join('、'),
+            '使用料件': matTexts
+          };
+
+          if (dailyTasks.length > 0) {
+            // 如果有任務，每個任務獨立一列
+            dailyTasks.forEach((t, idx) => {
+               exportData.push({
+                 ...baseRow,
+                 '任務編號': idx + 1,
+                 '車輛': t.vehicle || '',
+                 '業主': t.owner || '',
+                 '標案': t.project || '',
+                 '區域': t.region || '',
+                 '地址': t.address || '',
+                 '備註': t.remarks || ''
+               });
+               // 為了排版清楚，只有第一個任務行會顯示人員和用料，其餘留空 (這步可選，如果希望每行都有人員資訊就不要清空)
+               baseRow['早班時間'] = '';
+               baseRow['早班人員'] = '';
+               baseRow['晚班時間'] = '';
+               baseRow['晚班人員'] = '';
+               baseRow['使用料件'] = '';
+            });
+          } else {
+            // 如果沒有任務，只印人員和用料
+            exportData.push({
+               ...baseRow,
+               '任務編號': '',
+               '車輛': '',
+               '業主': '',
+               '標案': '',
+               '區域': '',
+               '地址': '',
+               '備註': ''
+            });
+          }
+        }
+
+        if (exportData.length === 0) {
+          alert('本月尚無任何排班與任務資料可匯出！');
+          return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        XLSX.utils.book_append_sheet(wb, ws, "月派工單");
+
+        const yyyy = currentYear;
+        const mm = String(currentMonth + 1).padStart(2, '0');
+        XLSX.writeFile(wb, `派工單排班紀錄_${yyyy}${mm}.xlsx`);
       };
 
       // 處理派工單匯入 (260309整理後派工單.xlsx 格式)
@@ -754,6 +983,7 @@
                     region: shiftType,
                     address: location,
                     remarks: time, // 把上班時間先寫進remarks
+                    vehicle: '',
                     customOwner: true, customProject: true
                   });
                 }
@@ -772,7 +1002,15 @@
               setTasks(newTasks);
               setMaterials(newMaterials);
               if (newUnfinished.length > 0) {
-                setUnfinishedTasks(newUnfinished);
+                setUnfinishedTasks(prev => {
+                  const merged = [...prev];
+                  newUnfinished.forEach(nu => {
+                    if (!merged.find(m => m.loc === nu.loc && m.remark === nu.remark)) {
+                      merged.push(nu);
+                    }
+                  });
+                  return merged;
+                });
               }
               alert(`成功匯入派工單並轉換為排班項目！`);
             } else {
@@ -814,7 +1052,16 @@
         // 計算出勤與未出勤統計
         const presentKeys = ['morning', 'evening', 'double', 'block'];
         const absentKeys = ['dayoff', 'unassign', 'personal', 'sick', 'awol', 'injury', 'funeral', 'paternity'];
-        const activeWorkers = dailyWorkersList.filter(w => w.name !== '0' && !w.hidden);
+        let activeWorkers = dailyWorkersList.filter(w => w.name !== '0' && !w.hidden);
+        
+        // --- 依車輛 (vehicle) 排序，有車號的前面依車號排，沒有的排後面 ---
+        activeWorkers.sort((a, b) => {
+          const vA = a.vehicle ? String(a.vehicle).trim() : 'ZZZ';
+          const vB = b.vehicle ? String(b.vehicle).trim() : 'ZZZ';
+          if (vA === vB) return a.id - b.id;
+          return vA.localeCompare(vB);
+        });
+
         const totalWorkers = activeWorkers.length;
 
         // 統計每位工人的狀態
@@ -869,31 +1116,47 @@
                 <div className="font-bold border-b border-slate-200/60 mb-0.5 pb-px flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>人員
                 </div>
-                <div className="grid grid-cols-5 gap-[1px] pt-px">
-                  {activeWorkers.map((workerObj, idx) => {
-                    const workerName = workerObj.name;
-                    const statusKey = dailyShifts[workerName] || Object.keys(statusTypes)[0];
-                    const statusInfo = statusTypes[statusKey] || Object.values(statusTypes)[0];
+                <div className="flex flex-col gap-[3px] mt-px">
+                  {Object.entries(activeWorkers.reduce((acc, worker) => {
+                    const v = worker.vehicle ? String(worker.vehicle).trim() : '';
+                    if (!acc[v]) acc[v] = [];
+                    acc[v].push(worker);
+                    return acc;
+                  }, {})).sort((a, b) => {
+                    if (a[0] === '' && b[0] !== '') return 1;
+                    if (a[0] !== '' && b[0] === '') return -1;
+                    return a[0].localeCompare(b[0]);
+                  }).map(([vKey, wList]) => (
+                    <div key={vKey} className={`relative flex flex-wrap gap-[1px] ${vKey ? 'border border-blue-300 rounded-sm p-[2px] pt-[8px] mt-[6px]' : ''}`}>
+                      {vKey && <span className="absolute -top-[6px] left-[2px] bg-slate-50 px-0.5 text-[9px] text-blue-700 font-bold leading-none tracking-tight rounded-sm opacity-90">{vKey}</span>}
+                      <div className="grid grid-cols-5 gap-[1px] w-full">
+                        {wList.map((workerObj, idx) => {
+                          const workerName = workerObj.name;
+                          const statusKey = dailyShifts[workerName] || Object.keys(statusTypes)[0];
+                          const statusInfo = statusTypes[statusKey] || Object.values(statusTypes)[0];
 
-                    const cellStyle = {
-                      backgroundColor: statusInfo.bg,
-                      color: statusInfo.textColor,
-                      borderWidth: statusInfo.borderStyle !== 'none' ? '2px' : '1px',
-                      borderStyle: statusInfo.borderStyle !== 'none' ? statusInfo.borderStyle : 'solid',
-                      borderColor: statusInfo.borderStyle !== 'none' ? statusInfo.borderColor : (statusInfo.bg === '#FFFFFF' ? '#ccc' : statusInfo.bg),
-                    };
+                          const cellStyle = {
+                            backgroundColor: statusInfo.bg,
+                            color: statusInfo.textColor,
+                            borderWidth: statusInfo.borderStyle !== 'none' ? '2px' : '1px',
+                            borderStyle: statusInfo.borderStyle !== 'none' ? statusInfo.borderStyle : 'solid',
+                            borderColor: statusInfo.borderStyle !== 'none' ? statusInfo.borderColor : (statusInfo.bg === '#FFFFFF' ? '#ccc' : statusInfo.bg),
+                          };
 
-                    return (
-                      <div
-                        key={idx}
-                        title={`${workerName}: ${statusInfo.label}`}
-                        style={cellStyle}
-                        className="w-full aspect-square rounded-sm flex items-center justify-center text-[10px] sm:text-[11px] cursor-help select-none font-medium opacity-90 hover:opacity-100 overflow-hidden leading-none tracking-tighter"
-                      >
-                        {workerObj.short}
+                          return (
+                            <div
+                              key={idx}
+                              title={`${workerName}: ${statusInfo.label}`}
+                              style={cellStyle}
+                              className="w-full aspect-square rounded-sm flex items-center justify-center text-[10px] sm:text-[11px] cursor-help select-none font-medium opacity-90 hover:opacity-100 overflow-hidden leading-none tracking-tighter"
+                            >
+                              {workerObj.short}
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -906,16 +1169,19 @@
                   <div className="flex flex-col gap-px pl-1 pt-px">
                     {tasks[dateStr].map((t, idx) => {
                       const prefix = `${String(idx + 1).padStart(2, '0')}-`;
+                      const vStr = t.vehicle ? `[${t.vehicle}]` : '';
                       return (
-                        <div key={idx} title={`${t.owner} / ${t.region} / ${t.address} ${t.remarks ? '(' + t.remarks + ')' : ''}`}>
+                        <div key={idx} title={`${t.owner} / ${t.region} / ${t.address} ${t.remarks ? '(' + t.remarks + ')' : ''} ${vStr}`}>
                           {isPast ? (
                             <div className="truncate flex items-center">
                               <span className="font-bold text-slate-500/80 mr-0.5 shrink-0">{prefix}</span>
+                              {t.vehicle && <span className="text-blue-600 font-bold mr-1 shrink-0">[{t.vehicle}]</span>}
                               <span className="truncate">{t.address || t.region || '無地址'}</span>
                             </div>
                           ) : (
                             <marquee scrollamount="2" className="flex items-center">
                               <span className="font-bold text-slate-500/80 mr-0.5">{prefix}</span>
+                              {t.vehicle && <span className="text-blue-600 font-bold mr-1">[{t.vehicle}]</span>}
                               <span className="font-medium">{t.owner}</span> {t.region} {t.address} {t.remarks ? `(${t.remarks})` : ''}
                             </marquee>
                           )}
@@ -957,13 +1223,19 @@
       const handleExportWorkers = () => {
         const targetDate = selectedDateStr || formatDateString(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
         const currentList = getWorkersForDate(workersHistory, targetDate);
-        const data = [['編號', '工班人員名稱', '簡稱', '是否不顯示']];
+        const data = [['編號', '工班人員名稱', '簡稱', '車輛', '是否不顯示']];
         currentList.forEach(w => {
-          data.push([w.id, w.name, w.short, w.hidden ? '是' : '否']);
+          data.push([w.id, w.name, w.short, w.vehicle || '', w.hidden ? '是' : '否']);
         });
         const ws = XLSX.utils.aoa_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "工班清單");
+        
+        if (vehicleList && vehicleList.length > 0) {
+          const vws = XLSX.utils.aoa_to_sheet(vehicleList);
+          XLSX.utils.book_append_sheet(wb, vws, "車輛清單");
+        }
+        
         XLSX.writeFile(wb, `工班人員清單_${targetDate}.xlsx`);
       };
 
@@ -972,8 +1244,28 @@
       const headerWorkersList = getWorkersForDate(workersHistory, selectedDateStr || todayGlobalStr);
 
       return (
-        <div className="min-h-screen bg-slate-100 py-6 px-2 sm:px-6 lg:px-8 font-sans">
-          <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        <React.Fragment>
+          {/* 如果開啟黑暗模式，強行掛載 CSS */}
+          {globalDarkMode && (
+            <style dangerouslySetInnerHTML={{__html: `
+              html, body {
+                background-color: #111111 !important;
+              }
+              .dark-theme-wrapper {
+                filter: invert(0.92) hue-rotate(180deg);
+              }
+              /* 把 input color 和 可能的影像反轉回正常 */
+              .dark-theme-wrapper input[type="color"] {
+                filter: invert(1.087) hue-rotate(180deg);
+              }
+              /* 避免 PDF loading 畫面等固定元素受到不正確的裁切影響，但仍保持其顏色 */
+              #pdf-loading {
+                filter: invert(0.92) hue-rotate(180deg);
+              }
+            `}} />
+          )}
+          <div className={`min-h-screen py-6 px-2 sm:px-6 lg:px-8 font-sans transition-all duration-300 ${globalDarkMode ? 'bg-white dark-theme-wrapper' : 'bg-slate-100'}`}>
+            <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
 
             {/* 頂部控制列 */}
             <div className="bg-white border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -1005,11 +1297,21 @@
                   <input type="file" accept=".xlsx, .xls" onChange={handleMissionExcelUpload} className="hidden" />
                 </label>
 
+                <button onClick={handleExportMissionExcel} className="flex items-center gap-1 bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200 hover:bg-fuchsia-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                  匯出任務清單
+                </button>
+
                 <label className="cursor-pointer flex items-center gap-1 bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2v6h6M4 22h14a2 2 0 0 0 2-2V8l-6-6H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2Z" /></svg>
                   匯入派工單
                   <input type="file" accept=".xlsx, .xls" onChange={handleWorkOrderUpload} className="hidden" />
                 </label>
+
+                <button onClick={handleExportWorkOrder} className="flex items-center gap-1 bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                  匯出派工單
+                </button>
 
                 <button onClick={handleSave} className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
@@ -1030,6 +1332,15 @@
                 <button onClick={() => { setShowTextInput(true); setTextInputResult(null); setTextInputValue(''); }} className="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
                   文字輸入排班
+                </button>
+
+                <button onClick={() => setGlobalDarkMode(!globalDarkMode)} className="flex items-center gap-1 bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                  {globalDarkMode ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  )}
+                  {globalDarkMode ? '亮色模式' : '黑暗模式'}
                 </button>
 
                 <div className="flex items-center">
@@ -1062,10 +1373,15 @@
                   boxShadow: info.borderStyle !== 'none' ? `0 0 0 1px ${info.borderColor}40` : 'none',
                 };
                 return (
-                  <div key={key} className="flex items-center gap-1.5">
+                  <button 
+                    key={key} 
+                    onClick={() => { setEditingStatusKey(key); setEditingStatusForm({ ...info }); }}
+                    className="flex items-center gap-1.5 p-1 rounded hover:bg-gray-100 transition-colors cursor-pointer border border-transparent hover:border-gray-200"
+                    title={`點擊以編輯「${info.label}」配色`}
+                  >
                     <div style={swatchStyle}></div>
                     <span className="text-gray-600">{info.label}</span>
-                  </div>
+                  </button>
                 );
               })}
               <span className="text-xs text-gray-400 ml-auto">※ 點擊月曆格子可編輯當日詳細班表</span>
@@ -1273,10 +1589,11 @@
                       <div className="space-y-3">
                         {(tasks[selectedDateStr] || []).map((task) => (
                           <div key={task.id} className="bg-white p-3 rounded-lg border border-amber-200/60 flex flex-col sm:flex-row gap-2 items-start sm:items-center shadow-sm">
+                            <input type="text" placeholder="車輛" className="w-[12%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500 font-bold text-blue-700" value={task.vehicle || ''} onChange={(e) => handleUpdateTask(task.id, 'vehicle', e.target.value)} />
                             <input type="text" placeholder="業主" className="w-[15%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.owner} onChange={(e) => handleUpdateTask(task.id, 'owner', e.target.value)} />
-                            <input type="text" placeholder="標案" className="w-[15%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.project} onChange={(e) => handleUpdateTask(task.id, 'project', e.target.value)} />
-                            <input type="text" placeholder="區域" className="w-[20%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.region} onChange={(e) => handleUpdateTask(task.id, 'region', e.target.value)} />
-                            <input type="text" placeholder="地址" className="w-[30%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.address} onChange={(e) => handleUpdateTask(task.id, 'address', e.target.value)} />
+                            <input type="text" placeholder="標案" className="w-[13%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.project} onChange={(e) => handleUpdateTask(task.id, 'project', e.target.value)} />
+                            <input type="text" placeholder="區域" className="w-[15%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.region} onChange={(e) => handleUpdateTask(task.id, 'region', e.target.value)} />
+                            <input type="text" placeholder="地址" className="w-[25%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.address} onChange={(e) => handleUpdateTask(task.id, 'address', e.target.value)} />
                             <input type="text" placeholder="備註" className="w-[20%] text-sm border border-gray-300 rounded-md py-1.5 px-2 outline-none focus:ring-2 focus:ring-amber-500" value={task.remarks} onChange={(e) => handleUpdateTask(task.id, 'remarks', e.target.value)} />
                             <button onClick={() => handleRemoveTask(task.id)} className="text-red-400 hover:text-red-600 p-1 flex-shrink-0">
                               <X className="w-5 h-5" />
@@ -1296,10 +1613,78 @@
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
                           使用料件
                         </h3>
-                        <button onClick={handleAddMaterial} className="text-xs bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg shadow-sm font-medium transition-colors">
-                          + 新增料件
-                        </button>
+                        <div className="flex gap-2">
+                          <button onClick={() => setShowPresetMaterials(!showPresetMaterials)} className="text-xs bg-teal-100 hover:bg-teal-200 text-teal-800 border border-teal-300 px-3 py-1.5 rounded-lg shadow-sm font-medium transition-colors flex items-center gap-1.5">
+                            📚 預設料件清單
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${showPresetMaterials ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>
+                          </button>
+                          <button onClick={handleAddMaterial} className="text-xs bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg shadow-sm font-medium transition-colors">
+                            + 新增料件
+                          </button>
+                        </div>
                       </div>
+
+                      {showPresetMaterials && (
+                        <div className="mb-3 bg-white/60 p-3 rounded-lg border border-teal-200">
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="text-sm text-gray-700 font-medium">點擊下方項目可自動加入料件：</div>
+                            <button onClick={() => setIsEditingMaterialPreset(!isEditingMaterialPreset)} className="text-xs text-blue-600 hover:text-blue-800 font-bold bg-blue-50 px-2 py-1 rounded">
+                              {isEditingMaterialPreset ? '完成編輯' : '編輯/自訂選項'}
+                            </button>
+                          </div>
+                          
+                          {isEditingMaterialPreset && (
+                            <div className="mb-3 p-2 bg-teal-50 rounded border border-teal-200 flex flex-col gap-2">
+                              <div className="text-xs font-bold text-teal-800">新增自訂料件選項：</div>
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <input type="text" placeholder="輸入料件/機具名稱" className="flex-1 text-sm px-2 py-1.5 border border-teal-300 rounded outline-none" value={newMaterialPresetName} onChange={e => setNewMaterialPresetName(e.target.value)} />
+                                <button onClick={() => {
+                                  if(newMaterialPresetName.trim()) {
+                                    setPresetMaterials([newMaterialPresetName.trim(), ...presetMaterials]);
+                                    setNewMaterialPresetName('');
+                                  }
+                                }} className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1.5 rounded text-sm font-bold whitespace-nowrap outline-none focus:ring-2 focus:ring-teal-500">新增</button>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                            {presetMaterials.length > 0 ? presetMaterials.map((p, idx) => (
+                              <div key={idx} className="relative inline-flex items-center">
+                                <button
+                                  onClick={() => {
+                                    if (!isEditingMaterialPreset) {
+                                      setMaterials(prev => {
+                                        const daily = prev[selectedDateStr] ? [...prev[selectedDateStr]] : [];
+                                        daily.push({ id: Date.now() + Math.random(), tool: p, rawMaterial: '', quantity: '' });
+                                        return { ...prev, [selectedDateStr]: daily };
+                                      });
+                                    } else {
+                                      setNewMaterialPresetName(p);
+                                    }
+                                  }}
+                                  className={`text-xs text-left bg-white border px-2 py-1.5 rounded shadow-sm transition-colors ${isEditingMaterialPreset ? 'border-teal-400 bg-slate-50 opacity-80 cursor-pointer hover:border-teal-500 pr-8' : 'border-teal-300 text-teal-900 hover:bg-teal-50'}`}
+                                >
+                                  {p}
+                                </button>
+                                {isEditingMaterialPreset && (
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPresetMaterials(presetMaterials.filter((_, i) => i !== idx));
+                                    }}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 bg-red-100 text-red-600 rounded flex items-center justify-center hover:bg-red-500 hover:text-white"
+                                    title="刪除項目"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                  </button>
+                                )}
+                              </div>
+                            )) : <div className="text-xs text-gray-500">尚無預設料件</div>}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="space-y-3">
                         {(materials[selectedDateStr] || []).map((mat) => (
                           <div key={mat.id} className="bg-white p-3 rounded-lg border border-teal-200/60 flex flex-col sm:flex-row gap-2 items-start sm:items-center shadow-sm">
@@ -1440,6 +1825,31 @@
                     <label className="block text-sm font-bold text-gray-700 mb-1">人員簡稱：</label>
                     <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-gray-800" value={editingWorker.short} onChange={e => setEditingWorker({ ...editingWorker, short: e.target.value })} />
                   </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-gray-100 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">配置車輛/分組：</label>
+                    <div className="grid grid-cols-6 gap-2 mb-2">
+                      {wizardVehicles.map(v => (
+                        <button
+                          key={v}
+                          onClick={() => setEditingWorker({ ...editingWorker, vehicle: v })}
+                          className={`py-1.5 rounded-lg border font-bold text-sm transition-colors ${editingWorker.vehicle === v ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700'}`}
+                        >
+                          {v}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setEditingWorker({ ...editingWorker, vehicle: '' })}
+                        className={`py-1.5 rounded-lg border font-bold text-xs transition-colors ${!editingWorker.vehicle ? 'bg-gray-500 text-white border-gray-500 shadow-sm' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}`}
+                        title="清除車輛"
+                      >
+                        無
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-gray-500 shrink-0">其他：</span>
+                      <input type="text" placeholder="手動輸入" className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 text-sm" value={editingWorker.vehicle || ''} onChange={e => setEditingWorker({ ...editingWorker, vehicle: e.target.value })} />
+                    </div>
+                  </div>
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-sm font-bold text-gray-700">月曆顯示狀態：</span>
                     <button
@@ -1460,11 +1870,11 @@
                       setWorkersHistory(prev => {
                         const newHistory = { ...prev };
                         const currentList = getWorkersForDate(prev, selectedDateStr);
-                        const newList = currentList.map(w => w.id === editingWorker.id ? { ...w, name: editingWorker.name.trim(), short: editingWorker.short.trim(), hidden: editingWorker.hidden } : w);
+                        const newList = currentList.map(w => w.id === editingWorker.id ? { ...w, name: editingWorker.name.trim(), short: editingWorker.short.trim(), hidden: editingWorker.hidden, vehicle: (editingWorker.vehicle || '').trim() } : w);
                         newHistory[selectedDateStr] = newList;
                         Object.keys(newHistory).forEach(k => {
                           if (k >= selectedDateStr) {
-                            newHistory[k] = newHistory[k].map(w => w.id === editingWorker.id ? { ...w, name: editingWorker.name.trim(), short: editingWorker.short.trim(), hidden: editingWorker.hidden } : w);
+                            newHistory[k] = newHistory[k].map(w => w.id === editingWorker.id ? { ...w, name: editingWorker.name.trim(), short: editingWorker.short.trim(), hidden: editingWorker.hidden, vehicle: (editingWorker.vehicle || '').trim() } : w);
                           }
                         });
                         return newHistory;
@@ -1606,17 +2016,63 @@
                         </button>
                         {showUnfinishedTasks && (
                           <div className="mt-2 bg-white/60 p-3 rounded-lg border border-amber-200">
-                            <div className="text-sm text-gray-700 mb-2 font-medium">點擊下方項目可自動帶入地址：</div>
+                            <div className="flex justify-between items-center mb-2">
+                              <div className="text-sm text-gray-700 font-medium">點擊下方項目可自動帶入地址：</div>
+                              <button onClick={() => setIsEditingUnfinished(!isEditingUnfinished)} className="text-xs text-blue-600 hover:text-blue-800 font-bold bg-blue-50 px-2 py-1 rounded">
+                                {isEditingUnfinished ? '完成編輯' : '編輯/自訂路段'}
+                              </button>
+                            </div>
+                            
+                            {isEditingUnfinished && (
+                              <div className="mb-3 p-2 bg-amber-50 rounded border border-amber-200 flex flex-col gap-2">
+                                <div className="text-xs font-bold text-amber-800">新增自訂待辦事項：</div>
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <input type="text" placeholder="輸入路段/地址" className="flex-1 text-sm px-2 py-1.5 border border-amber-300 rounded outline-none" value={newUnfinishedLoc} onChange={e => setNewUnfinishedLoc(e.target.value)} />
+                                  <input type="text" placeholder="備註 (選填)" className="w-full sm:w-1/3 text-sm px-2 py-1.5 border border-amber-300 rounded outline-none" value={newUnfinishedRemark} onChange={e => setNewUnfinishedRemark(e.target.value)} />
+                                  <button onClick={() => {
+                                    if(newUnfinishedLoc.trim()) {
+                                      setUnfinishedTasks([{loc: newUnfinishedLoc.trim(), remark: newUnfinishedRemark.trim()}, ...unfinishedTasks]);
+                                      setNewUnfinishedLoc('');
+                                      setNewUnfinishedRemark('');
+                                    }
+                                  }} className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded text-sm font-bold whitespace-nowrap outline-none focus:ring-2 focus:ring-amber-500">新增</button>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
                               {unfinishedTasks.length > 0 ? unfinishedTasks.map((t, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => { setWizardData({ ...wizardData, address: t.loc, remarks: t.remark || '未完工作' }); setShowUnfinishedTasks(false); }}
-                                  className="text-xs text-left bg-white hover:bg-amber-50 border border-amber-300 px-2 py-1.5 rounded shadow-sm text-amber-900 transition-colors"
-                                >
-                                  {t.loc} {t.remark ? `(${t.remark})` : ''}
-                                </button>
-                              )) : <div className="text-xs text-gray-500">尚無待辦事項，請先匯入「派工單Excel」</div>}
+                                <div key={idx} className="relative inline-flex items-center">
+                                  <button
+                                    onClick={() => {
+                                      if (!isEditingUnfinished) {
+                                        setWizardData({ ...wizardData, address: t.loc, remarks: t.remark || '未完工作' }); 
+                                        setShowUnfinishedTasks(false);
+                                      } else {
+                                        // Edit mode: populate the inputs to easily edit it (then user deletes old one)
+                                        setNewUnfinishedLoc(t.loc);
+                                        setNewUnfinishedRemark(t.remark);
+                                      }
+                                    }}
+                                    className={`text-xs text-left bg-white border px-2 py-1.5 rounded shadow-sm transition-colors ${isEditingUnfinished ? 'border-amber-400 bg-slate-50 opacity-80 cursor-pointer hover:border-amber-500 pr-8' : 'border-amber-300 text-amber-900 hover:bg-amber-50'}`}
+                                    title={isEditingUnfinished ? '點擊將內容帶入上方新增框以進行修改' : ''}
+                                  >
+                                    {t.loc} {t.remark ? `(${t.remark})` : ''}
+                                  </button>
+                                  {isEditingUnfinished && (
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setUnfinishedTasks(unfinishedTasks.filter((_, i) => i !== idx));
+                                      }}
+                                      className="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 bg-red-100 text-red-600 rounded flex items-center justify-center hover:bg-red-500 hover:text-white"
+                                      title="刪除項目"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>
+                                  )}
+                                </div>
+                              )) : <div className="text-xs text-gray-500">尚無待辦事項，請先匯入「派工單Excel」或手動新增</div>}
                             </div>
                           </div>
                         )}
@@ -1631,6 +2087,21 @@
                           <span className="text-sm font-bold text-gray-700 mb-1 block">備註事項：</span>
                           <input type="text" className="w-full border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-amber-500" placeholder="選填" value={wizardData.remarks} onChange={e => setWizardData({ ...wizardData, remarks: e.target.value })} />
                         </label>
+                        <div className="block">
+                          <span className="text-sm font-bold text-gray-700 mb-2 block">配置車輛/組別：</span>
+                          <div className="flex gap-2 mb-2 flex-wrap">
+                            {wizardVehicles.map(v => (
+                              <button
+                                key={v}
+                                onClick={() => setWizardData({ ...wizardData, vehicle: v === wizardData.vehicle ? '' : v })}
+                                className={`flex-1 py-2 rounded-xl border font-bold text-sm transition-colors ${wizardData.vehicle === v ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50'}`}
+                              >
+                                {v}
+                              </button>
+                            ))}
+                          </div>
+                          <input type="text" className="w-full border border-gray-300 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="其他區別 (手動輸入)" value={wizardData.vehicle || ''} onChange={e => setWizardData({ ...wizardData, vehicle: e.target.value })} />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1651,7 +2122,155 @@
             </div>
           )}
 
-        </div>
+          {/* 狀態圖例編輯 Modal */}
+          {editingStatusKey && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                  <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    編輯圖例：{editingStatusForm.label}
+                  </h2>
+                  <button onClick={() => setEditingStatusKey(null)} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="p-5 flex flex-col gap-4">
+                  <div className="flex justify-center mb-2">
+                    {/* 預覽 */}
+                    <div className="text-center">
+                      <p className="text-xs text-slate-400 font-bold mb-1">預覽效果</p>
+                      <div 
+                        style={{
+                          width: '40px', height: '40px', borderRadius: '4px',
+                          backgroundColor: editingStatusForm.bg,
+                          color: editingStatusForm.textColor,
+                          borderWidth: editingStatusForm.borderStyle !== 'none' ? '2px' : '1px',
+                          borderStyle: editingStatusForm.borderStyle !== 'none' ? editingStatusForm.borderStyle : 'solid',
+                          borderColor: editingStatusForm.borderStyle !== 'none' ? editingStatusForm.borderColor : (editingStatusForm.bg === '#FFFFFF' ? '#ccc' : editingStatusForm.bg),
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '14px', fontWeight: 'bold'
+                        }}
+                      >
+                        排
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 顏色選擇 */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-sm font-bold text-gray-700">底色</label>
+                      <input 
+                        type="color" 
+                        value={editingStatusForm.bg} 
+                        onChange={e => setEditingStatusForm({...editingStatusForm, bg: e.target.value})}
+                        className="w-full h-10 cursor-pointer border-0 p-0 rounded-lg overflow-hidden" 
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-sm font-bold text-gray-700">文字顏色</label>
+                      <div className="flex h-10 border rounded-lg overflow-hidden border-slate-300">
+                         <button 
+                           onClick={() => setEditingStatusForm({...editingStatusForm, textColor: '#333333'})} 
+                           className={`flex-1 flex items-center justify-center text-xs font-bold ${editingStatusForm.textColor.toLowerCase() === '#333333' ? 'bg-slate-200 text-slate-800' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                         >黑字</button>
+                         <button 
+                           onClick={() => setEditingStatusForm({...editingStatusForm, textColor: '#ffffff'})} 
+                           className={`flex-1 flex items-center justify-center text-xs font-bold ${editingStatusForm.textColor.toLowerCase() === '#ffffff' ? 'bg-slate-800 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                         >白字</button>
+                         <input 
+                           type="color" 
+                           value={editingStatusForm.textColor} 
+                           onChange={e => setEditingStatusForm({...editingStatusForm, textColor: e.target.value})}
+                           className="w-10 h-full cursor-pointer border-0 p-0" title="自訂顏色"
+                         />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 黑暗模式快選按鈕 (反向顯示) */}
+                  <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                    <label className="text-sm font-bold text-gray-700">深淺/黑暗反轉模式</label>
+                    <button
+                      onClick={() => {
+                        const newBg = editingStatusForm.textColor === '#ffffff' ? '#ffffff' : '#333333';
+                        const newText = editingStatusForm.textColor === '#ffffff' ? '#333333' : '#ffffff';
+                        setEditingStatusForm({...editingStatusForm, bg: newBg, textColor: newText, borderStyle: 'solid', borderColor: newBg === '#ffffff' ? '#ccc' : newText});
+                      }}
+                      className="p-2 border border-slate-300 rounded-lg text-sm bg-slate-800 text-white hover:bg-slate-700 transition-colors font-medium flex justify-center gap-2 items-center"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 12a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/></svg>
+                      一鍵套用：深底淺字 / 淺底深字
+                    </button>
+                  </div>
+
+                  {/* 外框選擇 */}
+                  <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                    <label className="text-sm font-bold text-gray-700">外框樣式</label>
+                    <div className="grid grid-cols-3 gap-2">
+                       {['none', 'solid', 'dashed'].map(style => (
+                         <button
+                           key={style}
+                           onClick={() => setEditingStatusForm({...editingStatusForm, borderStyle: style})}
+                           className={`py-2 text-xs font-bold rounded-lg border transition-colors ${editingStatusForm.borderStyle === style ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-slate-300 hover:bg-slate-50 text-slate-600'}`}
+                         >
+                           {style === 'none' ? '無外框' : style === 'solid' ? '實線 (實心)' : '虛線'}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+
+                  {(editingStatusForm.borderStyle === 'solid' || editingStatusForm.borderStyle === 'dashed') && (
+                    <div className="flex flex-col gap-1.5 pt-2">
+                      <label className="text-sm font-bold text-gray-700 flex items-center justify-between">
+                        外框顏色
+                        <button onClick={() => setEditingStatusForm({...editingStatusForm, borderColor: editingStatusForm.textColor})} className="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">與文字同色</button>
+                      </label>
+                      <input 
+                        type="color" 
+                        value={editingStatusForm.borderColor} 
+                        onChange={e => setEditingStatusForm({...editingStatusForm, borderColor: e.target.value})}
+                        className="w-full h-10 cursor-pointer border-0 p-0 rounded-lg overflow-hidden" 
+                      />
+                    </div>
+                  )}
+
+                </div>
+
+                <div className="px-5 py-4 bg-slate-50 border-t border-gray-100 flex gap-3 justify-end">
+                  <button onClick={() => setEditingStatusKey(null)} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
+                    取消
+                  </button>
+                  <button 
+                    onClick={() => {
+                      // 檢查防呆: 是否有其他重複的形式
+                      const dup = Object.entries(statusTypes).find(([k, v]) => {
+                         if (k === editingStatusKey) return false;
+                         return v.bg === editingStatusForm.bg && 
+                                v.textColor === editingStatusForm.textColor && 
+                                v.borderStyle === editingStatusForm.borderStyle && 
+                                (editingStatusForm.borderStyle === 'none' || v.borderColor === editingStatusForm.borderColor);
+                      });
+                      if (dup) {
+                         alert(`此顏色與外框的組合已與「${dup[1].label}」重複（形式不可完全相同），請重新調整參數！`);
+                         return;
+                      }
+                      setStatusTypes(prev => ({...prev, [editingStatusKey]: editingStatusForm}));
+                      setEditingStatusKey(null);
+                    }} 
+                    className="px-4 py-2 bg-teal-600 rounded-lg text-sm font-bold text-white hover:bg-teal-700 transition-colors shadow-sm"
+                  >
+                    儲存變更
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          </div>
+        </React.Fragment>
       );
     }
 
