@@ -1,7 +1,651 @@
 {
   "version": 1,
-  "savedAt": "2026-03-10T07:29:54.548Z",
+  "savedAt": "2026-03-17T06:06:51.437Z",
   "currentMonth": "2026-03",
+  "workersHistory": {
+    "2000-01-01": [
+      {
+        "id": 1,
+        "name": "陳易璘",
+        "short": "明"
+      },
+      {
+        "id": 2,
+        "name": "吳文龍",
+        "short": "龍"
+      },
+      {
+        "id": 3,
+        "name": "陳清建",
+        "short": "清"
+      },
+      {
+        "id": 4,
+        "name": "呂世欽",
+        "short": "欽"
+      },
+      {
+        "id": 5,
+        "name": "邱宗賢",
+        "short": "賢"
+      },
+      {
+        "id": 6,
+        "name": "周啟智",
+        "short": "智"
+      },
+      {
+        "id": 7,
+        "name": "許朝淵",
+        "short": "淵"
+      },
+      {
+        "id": 8,
+        "name": "廖旻揆",
+        "short": "揆"
+      },
+      {
+        "id": 9,
+        "name": "莊盛傑",
+        "short": "傑"
+      },
+      {
+        "id": 10,
+        "name": "張成億",
+        "short": "億"
+      },
+      {
+        "id": 11,
+        "name": "李祐緯",
+        "short": "緯"
+      },
+      {
+        "id": 12,
+        "name": "劉文傑",
+        "short": "劉"
+      },
+      {
+        "id": 13,
+        "name": "黃品融",
+        "short": "融"
+      },
+      {
+        "id": 14,
+        "name": "蕭承晉",
+        "short": "蕭"
+      },
+      {
+        "id": 15,
+        "name": "陳禮宏",
+        "short": "禮"
+      },
+      {
+        "id": 16,
+        "name": "林宏叡",
+        "short": "叡"
+      },
+      {
+        "id": 17,
+        "name": "21-亞納",
+        "short": "亞"
+      },
+      {
+        "id": 18,
+        "name": "23-蘇南迪",
+        "short": "迪"
+      },
+      {
+        "id": 19,
+        "name": "13-普萬托",
+        "short": "普"
+      },
+      {
+        "id": 20,
+        "name": "點-胡哲維",
+        "short": "D1"
+      },
+      {
+        "id": 21,
+        "name": "點-測試",
+        "short": "D2"
+      },
+      {
+        "id": 22,
+        "name": "點-測試2",
+        "short": "D3"
+      },
+      {
+        "id": 23,
+        "name": "0",
+        "short": "23"
+      },
+      {
+        "id": 24,
+        "name": "0",
+        "short": "24"
+      },
+      {
+        "id": 25,
+        "name": "0",
+        "short": "25"
+      },
+      {
+        "id": 26,
+        "name": "0",
+        "short": "26"
+      },
+      {
+        "id": 27,
+        "name": "0",
+        "short": "27"
+      },
+      {
+        "id": 28,
+        "name": "0",
+        "short": "28"
+      },
+      {
+        "id": 29,
+        "name": "0",
+        "short": "29"
+      },
+      {
+        "id": 30,
+        "name": "0",
+        "short": "30"
+      }
+    ],
+    "2026-03-11": [
+      {
+        "id": 1,
+        "name": "陳易璘",
+        "short": "明",
+        "hidden": false
+      },
+      {
+        "id": 2,
+        "name": "吳文龍",
+        "short": "龍"
+      },
+      {
+        "id": 3,
+        "name": "陳清建",
+        "short": "清",
+        "vehicle": ""
+      },
+      {
+        "id": 4,
+        "name": "呂世欽",
+        "short": "欽"
+      },
+      {
+        "id": 5,
+        "name": "邱宗賢",
+        "short": "賢"
+      },
+      {
+        "id": 6,
+        "name": "周啟智",
+        "short": "智"
+      },
+      {
+        "id": 7,
+        "name": "許朝淵",
+        "short": "淵"
+      },
+      {
+        "id": 8,
+        "name": "廖旻揆",
+        "short": "旻"
+      },
+      {
+        "id": 9,
+        "name": "莊盛傑",
+        "short": "傑"
+      },
+      {
+        "id": 10,
+        "name": "張成億",
+        "short": "億"
+      },
+      {
+        "id": 11,
+        "name": "李祐緯",
+        "short": "緯"
+      },
+      {
+        "id": 12,
+        "name": "劉文傑",
+        "short": "劉"
+      },
+      {
+        "id": 13,
+        "name": "黃品融",
+        "short": "融"
+      },
+      {
+        "id": 14,
+        "name": "蕭承晉",
+        "short": "蕭"
+      },
+      {
+        "id": 15,
+        "name": "陳禮宏",
+        "short": "禮"
+      },
+      {
+        "id": 16,
+        "name": "林宏叡",
+        "short": "叡"
+      },
+      {
+        "id": 17,
+        "name": "21-亞納",
+        "short": "亞"
+      },
+      {
+        "id": 18,
+        "name": "23-蘇南迪",
+        "short": "迪"
+      },
+      {
+        "id": 19,
+        "name": "13-普萬托",
+        "short": "普"
+      },
+      {
+        "id": 20,
+        "name": "點-胡哲維",
+        "short": "D1"
+      },
+      {
+        "id": 21,
+        "name": "點-測試",
+        "short": "D2"
+      },
+      {
+        "id": 22,
+        "name": "點-測試2",
+        "short": "D3"
+      },
+      {
+        "id": 23,
+        "name": "0",
+        "short": "23"
+      },
+      {
+        "id": 24,
+        "name": "0",
+        "short": "24"
+      },
+      {
+        "id": 25,
+        "name": "0",
+        "short": "25"
+      },
+      {
+        "id": 26,
+        "name": "0",
+        "short": "26"
+      },
+      {
+        "id": 27,
+        "name": "0",
+        "short": "27"
+      },
+      {
+        "id": 28,
+        "name": "0",
+        "short": "28"
+      },
+      {
+        "id": 29,
+        "name": "0",
+        "short": "29"
+      },
+      {
+        "id": 30,
+        "name": "0",
+        "short": "30"
+      }
+    ],
+    "2026-03-14": [
+      {
+        "id": 1,
+        "name": "陳易璘",
+        "short": "明",
+        "hidden": false
+      },
+      {
+        "id": 2,
+        "name": "吳文龍",
+        "short": "龍"
+      },
+      {
+        "id": 3,
+        "name": "陳清建",
+        "short": "清",
+        "vehicle": ""
+      },
+      {
+        "id": 4,
+        "name": "呂世欽",
+        "short": "欽"
+      },
+      {
+        "id": 5,
+        "name": "邱宗賢",
+        "short": "賢"
+      },
+      {
+        "id": 6,
+        "name": "周啟智",
+        "short": "智"
+      },
+      {
+        "id": 7,
+        "name": "許朝淵",
+        "short": "淵"
+      },
+      {
+        "id": 8,
+        "name": "廖旻揆",
+        "short": "旻"
+      },
+      {
+        "id": 9,
+        "name": "莊盛傑",
+        "short": "傑"
+      },
+      {
+        "id": 10,
+        "name": "張成億",
+        "short": "億"
+      },
+      {
+        "id": 11,
+        "name": "李祐緯",
+        "short": "緯"
+      },
+      {
+        "id": 12,
+        "name": "劉文傑",
+        "short": "劉"
+      },
+      {
+        "id": 13,
+        "name": "黃品融",
+        "short": "融"
+      },
+      {
+        "id": 14,
+        "name": "蕭承晉",
+        "short": "蕭"
+      },
+      {
+        "id": 15,
+        "name": "陳禮宏",
+        "short": "禮"
+      },
+      {
+        "id": 16,
+        "name": "林宏叡",
+        "short": "叡"
+      },
+      {
+        "id": 17,
+        "name": "21-亞納",
+        "short": "亞"
+      },
+      {
+        "id": 18,
+        "name": "23-蘇南迪",
+        "short": "迪"
+      },
+      {
+        "id": 19,
+        "name": "13-普萬托",
+        "short": "普"
+      },
+      {
+        "id": 20,
+        "name": "點-胡哲維",
+        "short": "D1"
+      },
+      {
+        "id": 21,
+        "name": "點-測試",
+        "short": "D2"
+      },
+      {
+        "id": 22,
+        "name": "點-測試2",
+        "short": "D3"
+      },
+      {
+        "id": 23,
+        "name": "0",
+        "short": "23"
+      },
+      {
+        "id": 24,
+        "name": "0",
+        "short": "24"
+      },
+      {
+        "id": 25,
+        "name": "0",
+        "short": "25"
+      },
+      {
+        "id": 26,
+        "name": "0",
+        "short": "26"
+      },
+      {
+        "id": 27,
+        "name": "0",
+        "short": "27"
+      },
+      {
+        "id": 28,
+        "name": "0",
+        "short": "28"
+      },
+      {
+        "id": 29,
+        "name": "0",
+        "short": "29"
+      },
+      {
+        "id": 30,
+        "name": "0",
+        "short": "30"
+      }
+    ],
+    "2026-03-17": [
+      {
+        "id": 1,
+        "name": "陳易璘",
+        "short": "明",
+        "vehicle": ""
+      },
+      {
+        "id": 2,
+        "name": "吳文龍",
+        "short": "龍",
+        "vehicle": ""
+      },
+      {
+        "id": 3,
+        "name": "陳清建",
+        "short": "清",
+        "vehicle": ""
+      },
+      {
+        "id": 4,
+        "name": "呂世欽",
+        "short": "欽",
+        "vehicle": ""
+      },
+      {
+        "id": 5,
+        "name": "邱宗賢",
+        "short": "賢",
+        "vehicle": ""
+      },
+      {
+        "id": 6,
+        "name": "周啟智",
+        "short": "智",
+        "vehicle": ""
+      },
+      {
+        "id": 7,
+        "name": "許朝淵",
+        "short": "淵",
+        "vehicle": ""
+      },
+      {
+        "id": 8,
+        "name": "廖旻揆",
+        "short": "旻",
+        "vehicle": ""
+      },
+      {
+        "id": 9,
+        "name": "莊盛傑",
+        "short": "傑",
+        "vehicle": ""
+      },
+      {
+        "id": 10,
+        "name": "張成億",
+        "short": "億",
+        "vehicle": ""
+      },
+      {
+        "id": 11,
+        "name": "李祐緯",
+        "short": "緯",
+        "vehicle": ""
+      },
+      {
+        "id": 12,
+        "name": "劉文傑",
+        "short": "劉",
+        "vehicle": ""
+      },
+      {
+        "id": 13,
+        "name": "黃品融",
+        "short": "融",
+        "vehicle": ""
+      },
+      {
+        "id": 14,
+        "name": "蕭承晉",
+        "short": "蕭",
+        "vehicle": ""
+      },
+      {
+        "id": 15,
+        "name": "陳禮宏",
+        "short": "禮",
+        "vehicle": ""
+      },
+      {
+        "id": 16,
+        "name": "林宏叡",
+        "short": "叡",
+        "vehicle": ""
+      },
+      {
+        "id": 17,
+        "name": "21-亞納",
+        "short": "亞",
+        "vehicle": ""
+      },
+      {
+        "id": 18,
+        "name": "23-蘇南迪",
+        "short": "迪",
+        "vehicle": ""
+      },
+      {
+        "id": 19,
+        "name": "13-普萬托",
+        "short": "普",
+        "vehicle": ""
+      },
+      {
+        "id": 20,
+        "name": "胡哲維",
+        "short": "維",
+        "vehicle": ""
+      },
+      {
+        "id": 21,
+        "name": "謝侑軒",
+        "short": "侑",
+        "vehicle": ""
+      },
+      {
+        "id": 22,
+        "name": "點-測試2",
+        "short": "D3",
+        "vehicle": ""
+      },
+      {
+        "id": 23,
+        "name": "點-測試3",
+        "short": "23",
+        "vehicle": ""
+      },
+      {
+        "id": 24,
+        "name": "點-測試4",
+        "short": "24",
+        "vehicle": ""
+      },
+      {
+        "id": 25,
+        "name": "0",
+        "short": "25",
+        "vehicle": ""
+      },
+      {
+        "id": 26,
+        "name": "0",
+        "short": "26",
+        "vehicle": ""
+      },
+      {
+        "id": 27,
+        "name": "0",
+        "short": "27",
+        "vehicle": ""
+      },
+      {
+        "id": 28,
+        "name": "0",
+        "short": "28",
+        "vehicle": ""
+      },
+      {
+        "id": 29,
+        "name": "0",
+        "short": "29",
+        "vehicle": ""
+      },
+      {
+        "id": 30,
+        "name": "0",
+        "short": "30",
+        "vehicle": ""
+      }
+    ]
+  },
   "workers": [
     {
       "id": 1,
@@ -403,6 +1047,122 @@
       "點-胡哲維": "status_6",
       "點-測試": "status_6",
       "點-測試2": "status_6"
+    },
+    "2026-03-11": {
+      "陳易璘": "status_5",
+      "呂世欽": "status_2",
+      "李祐緯": "status_2",
+      "邱宗賢": "status_2",
+      "林宏叡": "status_2",
+      "廖旻揆": "status_2",
+      "許朝淵": "status_2",
+      "劉文傑": "status_2",
+      "張成億": "status_2",
+      "點-胡哲維": "status_5",
+      "陳清建": "status_2"
+    },
+    "2026-03-12": {
+      "呂世欽": "status_2",
+      "黃品融": "status_2",
+      "周啟智": "status_2",
+      "許朝淵": "status_2",
+      "邱宗賢": "status_2",
+      "吳文龍": "status_2",
+      "陳禮宏": "status_2",
+      "廖旻揆": "status_2",
+      "林宏叡": "status_2",
+      "點-胡哲維": "status_5",
+      "李祐緯": "status_2",
+      "蕭承晉": "status_2",
+      "莊盛傑": "status_2",
+      "張成億": "status_2",
+      "劉文傑": "status_2",
+      "陳清建": "status_2"
+    },
+    "2026-03-13": {
+      "呂世欽": "status_2",
+      "黃品融": "status_2",
+      "廖旻揆": "status_2",
+      "吳文龍": "status_2",
+      "陳禮宏": "status_2"
+    },
+    "2026-03-15": {
+      "呂世欽": "status_1",
+      "黃品融": "status_1",
+      "點-胡哲維": "status_5",
+      "吳文龍": "status_1",
+      "陳禮宏": "status_1",
+      "點-測試": "status_5",
+      "點-測試2": "status_5",
+      "廖旻揆": "status_1",
+      "許朝淵": "status_2",
+      "蕭承晉": "status_2",
+      "莊盛傑": "status_2",
+      "李祐緯": "status_2",
+      "邱宗賢": "status_2",
+      "劉文傑": "status_2",
+      "周啟智": "status_2",
+      "林宏叡": "status_2",
+      "陳清建": "status_2"
+    },
+    "2026-03-16": {
+      "呂世欽": "status_2",
+      "廖旻揆": "status_2",
+      "許朝淵": "status_2",
+      "莊盛傑": "status_2",
+      "劉文傑": "status_2",
+      "張成億": "status_2",
+      "周啟智": "status_2",
+      "李祐緯": "status_2",
+      "黃品融": "status_2",
+      "陳禮宏": "status_2",
+      "吳文龍": "status_2",
+      "蕭承晉": "status_2",
+      "點-胡哲維": "status_5",
+      "邱宗賢": "status_2",
+      "陳清建": "status_2"
+    },
+    "2026-03-14": {
+      "陳易璘": "status_6",
+      "吳文龍": "status_6",
+      "陳清建": "status_6",
+      "呂世欽": "status_6",
+      "邱宗賢": "status_6",
+      "周啟智": "status_6",
+      "許朝淵": "status_6",
+      "廖旻揆": "status_6",
+      "莊盛傑": "status_6",
+      "張成億": "status_6",
+      "李祐緯": "status_6",
+      "劉文傑": "status_6",
+      "黃品融": "status_6",
+      "蕭承晉": "status_6",
+      "陳禮宏": "status_6",
+      "林宏叡": "status_6",
+      "21-亞納": "status_6",
+      "23-蘇南迪": "status_6",
+      "13-普萬托": "status_6",
+      "點-胡哲維": "status_6",
+      "點-測試": "status_6",
+      "點-測試2": "status_6"
+    },
+    "2026-03-17": {
+      "呂世欽": "status_2",
+      "李祐緯": "status_2",
+      "周啟智": "status_2",
+      "邱宗賢": "status_2",
+      "林宏叡": "status_2",
+      "胡哲維": "status_2",
+      "謝侑軒": "status_2",
+      "廖旻揆": "status_2",
+      "許朝淵": "status_2",
+      "莊盛傑": "status_2",
+      "劉文傑": "status_2",
+      "張成億": "status_2",
+      "黃品融": "status_2",
+      "陳禮宏": "status_2",
+      "吳文龍": "status_2",
+      "蕭承晉": "status_2"
     }
   },
   "shiftTimes": {
@@ -425,6 +1185,7 @@
         "region": "早班",
         "address": "公館圓環(紅白邊線刨除",
         "remarks": "",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -435,13 +1196,182 @@
         "region": "晚班",
         "address": "裝備保養.工廠整理",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       }
     ],
-    "2026-03-10": [],
-    "2026-03-13": [],
-    "2026-03-11": [],
+    "2026-03-10": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道102甲線(0K+000~5K+000)(新增槽化30",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "多張完成照(須標示路名巷口",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "稻田",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道106 線 (50K+000~70K+000)",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "多張完成照(須標示路名巷口",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "八下一派*2",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "大園一派*15",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "士林區美崙街(文林路~華榮街)",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "美崙街(華榮街-美崙街62巷",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-13": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "雙溪102甲方正",
+        "remarks": "23:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*1，每處施工後，前後汙損都補",
+        "remarks": "23:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-11": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道102甲線(0K+000~5K+000)(新增槽化30",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*2，多張完成照",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道106 線 (50K+000~70K+000)",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "多張完成照",
+        "remarks": "22:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
     "2026-03-02": [
       {
         "owner": "碩",
@@ -450,6 +1380,7 @@
         "region": "早班",
         "address": "新北市道102線(15K+000~20K+900)",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -460,6 +1391,7 @@
         "region": "早班",
         "address": "施工前中後(完成照順向拍.路口照",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -470,6 +1402,7 @@
         "region": "早班",
         "address": "229下班後清空，要驗車",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -480,6 +1413,7 @@
         "region": "晚班",
         "address": "市道102甲線(0K+000~5K+000)(新增槽化30",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -490,6 +1424,7 @@
         "region": "晚班",
         "address": "施工前中後(完成照順向拍.路口照",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -500,6 +1435,7 @@
         "region": "晚班",
         "address": "槽化要完成照",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       }
@@ -512,6 +1448,7 @@
         "region": "早班",
         "address": "7771驗車",
         "remarks": "",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -522,6 +1459,7 @@
         "region": "早班",
         "address": "鶯歌石膏",
         "remarks": "",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -532,6 +1470,7 @@
         "region": "早班",
         "address": "康寧路一段(成功路三段與星雲街)",
         "remarks": "",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -542,6 +1481,7 @@
         "region": "早班",
         "address": "市道106 線 (50K+000~70K+000)",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -552,6 +1492,7 @@
         "region": "早班",
         "address": "料區整理",
         "remarks": "10:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       }
@@ -564,6 +1505,7 @@
         "region": "早班",
         "address": "市道102線(15K+000~20K+900)",
         "remarks": "",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -574,6 +1516,7 @@
         "region": "早班",
         "address": "製組*1.多張完成照(每處路口請標示路口名",
         "remarks": "",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -584,6 +1527,7 @@
         "region": "晚班",
         "address": "市道106 線 (50K+000~70K+000",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -594,6 +1538,7 @@
         "region": "晚班",
         "address": "製組*1.每處完成照(需標註路名巷口",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -604,6 +1549,7 @@
         "region": "晚班",
         "address": "安和路二段20號",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -614,6 +1560,7 @@
         "region": "晚班",
         "address": "樂利路47號(行穿",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -624,6 +1571,7 @@
         "region": "晚班",
         "address": "新生南路三段2號填縫",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -634,6 +1582,7 @@
         "region": "晚班",
         "address": "施工前中後",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -644,6 +1593,7 @@
         "region": "晚班",
         "address": "早上要連班的人.以21-06為段落",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -654,6 +1604,7 @@
         "region": "晚班",
         "address": "市道102甲線(0K+000~5K+000",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
       },
@@ -664,8 +1615,253 @@
         "region": "晚班",
         "address": "製組*1.每處完成照(需標註路名巷口",
         "remarks": "21:00",
+        "vehicle": "",
         "customOwner": true,
         "customProject": true
+      }
+    ],
+    "2026-03-12": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "市道106 線 (50K+000~70K+000)",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "完成照，巷口路名",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-15": [
+      {
+        "owner": "冠筑",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "八里汙水處理廠13:00",
+        "remarks": "12:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*1工區起點.終點.特殊標線照片",
+        "remarks": "12:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "雙溪102甲方正自強路21號",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*1.每處完工照",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-16": [
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "大業路(雙全街.育仁路(黃格",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "施工前中後.不同角度照片",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "台2線.淡水淡金路/坪頂路",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "製組*1(當天工區範圍)",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "每處完成照，依照工區長短拍攝照片數量，以全部拍到為準",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "打底油錄影",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "安全帽.反光衣要穿",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "綠色標線不做",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "碩",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "雙溪自強路21號.施工範圍破損全補要註明",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "每處完成照",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "冠筑",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "冠筑鑽心11處",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "施工前中後",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      },
+      {
+        "owner": "",
+        "project": "",
+        "city": "",
+        "region": "晚班",
+        "address": "和平西路三段與昆明街口採圖",
+        "remarks": "21:00",
+        "vehicle": "",
+        "customOwner": true,
+        "customProject": true
+      }
+    ],
+    "2026-03-17": [
+      {
+        "id": 1773709380829,
+        "owner": "磐碩",
+        "project": "養工3區",
+        "region": "台北市大同區",
+        "address": "雙溪102甲方正",
+        "remarks": "0.45",
+        "vehicle": "Z"
+      },
+      {
+        "id": 1773709633573,
+        "owner": "稻田",
+        "project": "稻田",
+        "region": "嘉義市西區",
+        "address": "123",
+        "remarks": "",
+        "vehicle": "Z"
+      },
+      {
+        "id": 1773716063841,
+        "owner": "磐碩",
+        "project": "(凱竹)3區",
+        "region": "新北市金山區",
+        "address": "堤頂大道槽化(磨除另約時間",
+        "remarks": "等會勘",
+        "vehicle": "C"
       }
     ]
   },
@@ -733,25 +1929,174 @@
         "rawMaterial": "",
         "quantity": ""
       }
+    ],
+    "2026-03-10": [
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "採圖.錄影.噴點",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "預估數量",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "預估數量",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-11": [
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-12": [
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-13": [
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "紅.黃.白.行穿",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-15": [
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "減速標線",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.45",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-16": [
+      {
+        "tool": "0.5",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "白40",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "黃20",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "紅10",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "止60",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.5",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "0.5",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "tool": "錄影.噴點.採圖",
+        "rawMaterial": "",
+        "quantity": ""
+      }
+    ],
+    "2026-03-17": [
+      {
+        "id": 1773709474853.6162,
+        "tool": "防撞桿 / 軟質桿",
+        "rawMaterial": "石膏",
+        "quantity": "3"
+      },
+      {
+        "id": 1773709480967.6836,
+        "tool": "石膏",
+        "rawMaterial": "",
+        "quantity": ""
+      },
+      {
+        "id": 1773716110145,
+        "tool": "",
+        "rawMaterial": "",
+        "quantity": ""
+      }
     ]
   },
   "missionConfig": [
     {
       "業主": "磐碩",
-      "標案": "養工3區",
+      "標案": "(凱竹)3區",
       "區域": "台灣郵政地址所有項目(新北市XX區)",
       "地址": "前項區域所有路名"
     },
     {
       "業主": "磐碩",
-      "標案": "養工7區",
+      "標案": "(聖東)7區",
       "區域": "台灣郵政地址所有項目(新北市XX區)",
       "地址": "前項區域所有路名"
     },
     {
       "業主": "磐碩",
-      "標案": "養工8區",
+      "標案": "(磐峰)8區",
       "區域": "台灣郵政地址所有項目(新北市XX區)",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "巡查3標",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "巡查6標",
+      "區域": "台灣郵政地址所有項目",
       "地址": "前項區域所有路名"
     },
     {
@@ -768,26 +2113,8 @@
     },
     {
       "業主": "磐碩",
-      "標案": "公路局",
-      "區域": "台灣郵政地址所有項目",
-      "地址": "前項區域所有路名"
-    },
-    {
-      "業主": "磐碩",
-      "標案": "農業局1區",
-      "區域": "台灣郵政地址所有項目",
-      "地址": "前項區域所有路名"
-    },
-    {
-      "業主": "磐碩",
       "標案": "大園",
       "區域": "台灣郵政地址所有項目(桃園市XX區)",
-      "地址": "前項區域所有路名"
-    },
-    {
-      "業主": "磐碩",
-      "標案": "專案5標",
-      "區域": "台灣郵政地址所有項目",
       "地址": "前項區域所有路名"
     },
     {
@@ -798,13 +2125,19 @@
     },
     {
       "業主": "磐碩",
-      "標案": "巡查3標",
+      "標案": "公路局",
       "區域": "台灣郵政地址所有項目",
       "地址": "前項區域所有路名"
     },
     {
       "業主": "磐碩",
-      "標案": "巡查6標",
+      "標案": "農業局",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "磐碩",
+      "標案": "專案5標",
       "區域": "台灣郵政地址所有項目",
       "地址": "前項區域所有路名"
     },
@@ -833,8 +2166,20 @@
       "地址": "前項區域所有路名"
     },
     {
-      "業主": "福呈",
+      "業主": "稻田",
       "標案": "福呈",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "力元",
+      "標案": "力元",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "松盛",
+      "標案": "4區",
       "區域": "台灣郵政地址所有項目",
       "地址": "前項區域所有路名"
     },
@@ -843,6 +2188,167 @@
       "標案": "矽昌",
       "區域": "台灣郵政地址所有項目",
       "地址": "前項區域所有路名"
+    },
+    {
+      "業主": "私人",
+      "標案": "私人",
+      "區域": "台灣郵政地址所有項目",
+      "地址": "前項區域所有路名"
     }
+  ],
+  "vehicleList": [],
+  "unfinishedTasks": [
+    {
+      "loc": "市道106 線 (50K+000~70K+000)",
+      "remark": ""
+    },
+    {
+      "loc": "堤頂大道槽化(磨除另約時間",
+      "remark": "等會勘"
+    },
+    {
+      "loc": "冠筑鑽心11處3/20",
+      "remark": ""
+    },
+    {
+      "loc": "大園中正東路三段52巷採圖",
+      "remark": ""
+    },
+    {
+      "loc": "八里汙水處理廠",
+      "remark": "減速標線.紅線(另約時間"
+    },
+    {
+      "loc": "115-7(北8(採圖",
+      "remark": ""
+    },
+    {
+      "loc": "和平西路三段與昆明街口採圖",
+      "remark": ""
+    },
+    {
+      "loc": "大業路(雙全街.育仁路",
+      "remark": "黃格"
+    },
+    {
+      "loc": "麥帥二橋採圖",
+      "remark": ""
+    },
+    {
+      "loc": "雙溪自強路21號*7",
+      "remark": ""
+    },
+    {
+      "loc": "採圖",
+      "remark": ""
+    },
+    {
+      "loc": "環河南路二段(雙園-西藏",
+      "remark": "等冠筑回應"
+    },
+    {
+      "loc": "懷寧街(衡陽路-貴陽街一段(明年鋪",
+      "remark": ""
+    },
+    {
+      "loc": "華江橋(機車引道(台北往新北",
+      "remark": "貓眼防撞桿"
+    },
+    {
+      "loc": "萬華區環河南路二段(和平西路三段至西藏路",
+      "remark": ""
+    },
+    {
+      "loc": "青島東路(林森南路至杭州南路一段",
+      "remark": ""
+    },
+    {
+      "loc": "中正區水源快速道路(師大路至基隆路四段",
+      "remark": ""
+    },
+    {
+      "loc": "康寧路一段(成功路三段與星雲街)K",
+      "remark": ""
+    },
+    {
+      "loc": "民權東路六段115巷-123巷",
+      "remark": ""
+    },
+    {
+      "loc": "研究院路三段K",
+      "remark": ""
+    },
+    {
+      "loc": "台2(4.5-8k)3月",
+      "remark": ""
+    },
+    {
+      "loc": "淡金路三段/奎柔山路(北8",
+      "remark": ""
+    },
+    {
+      "loc": "中正路二段51巷與沙崙路K",
+      "remark": ""
+    },
+    {
+      "loc": "沙崙路(中正二路-中正路段22巷)K",
+      "remark": ""
+    },
+    {
+      "loc": "中正路二段51巷(觀海路-中正路二段)K",
+      "remark": ""
+    },
+    {
+      "loc": "中正路一段87巷8弄至中正路二段51巷K",
+      "remark": ""
+    },
+    {
+      "loc": "中山北路一段(新市一路三段-大義街(550五",
+      "remark": ""
+    },
+    {
+      "loc": "林口文化北路二段(福林路-中山路)",
+      "remark": ""
+    },
+    {
+      "loc": "八下第一派K",
+      "remark": ""
+    },
+    {
+      "loc": "大園第一派*15K",
+      "remark": ""
+    }
+  ],
+  "presetMaterials": [
+    "熱拌 65% (0.65)",
+    "熱拌 50% (0.50)",
+    "熱拌 45% (0.45)",
+    "冷塑",
+    "黑漆",
+    "白漆",
+    "黃油漆",
+    "底油",
+    "藍粉",
+    "乙料",
+    "防撞桿",
+    "貓眼",
+    "瀝青車",
+    "磨線機 / 磨除機 / 刨除機",
+    "貓眼機",
+    "電鑽 + 發電機",
+    "紅白推車",
+    "熱貼/熱拌",
+    "防撞桿 / 軟質桿",
+    "水車",
+    "石膏",
+    "槽化線",
+    "行人符號"
+  ],
+  "wizardVehicles": [
+    "C",
+    "F",
+    "G",
+    "Z",
+    "採"
   ]
 }
